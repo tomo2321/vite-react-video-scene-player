@@ -1,5 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
-import type { VideoPlayerProps, Subtitle } from '../types';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { Subtitle, VideoPlayerProps } from '../types';
 import './VideoPlayer.css';
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -10,7 +10,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   onVideoRef,
   autoPauseEnabled,
   subtitleFontSize,
-  resetPositionTrigger
+  resetPositionTrigger,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoUrl, setVideoUrl] = useState<string>('');
@@ -27,13 +27,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (videoRef.current) {
       onVideoRef(videoRef.current);
     }
-  }, [onVideoRef, videoUrl]); // Added videoUrl dependency
+  }, [onVideoRef]); // Added videoUrl dependency
 
   useEffect(() => {
     if (videoFile) {
       const url = URL.createObjectURL(videoFile);
       setVideoUrl(url);
-      
+
       return () => {
         URL.revokeObjectURL(url);
       };
@@ -43,37 +43,33 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   useEffect(() => {
     // Find current subtitle based on video time with millisecond precision
     const timeInMs = Math.round(currentTime * 1000);
-    
+
     if (autoPauseEnabled) {
       // When auto-pause is enabled, extend subtitle display until next subtitle starts
-      let displaySubtitle = subtitles.find(sub => 
-        timeInMs >= sub.start && timeInMs <= sub.end
-      );
-      
+      let displaySubtitle = subtitles.find((sub) => timeInMs >= sub.start && timeInMs <= sub.end);
+
       // If no current subtitle, check if we should display the last one until next one starts
       if (!displaySubtitle) {
         // Find the last subtitle that ended
         const lastEndedSubtitle = subtitles
-          .filter(sub => timeInMs > sub.end)
+          .filter((sub) => timeInMs > sub.end)
           .sort((a, b) => b.end - a.end)[0];
-        
+
         if (lastEndedSubtitle) {
           // Check if there's a next subtitle coming up
-          const nextSubtitle = subtitles.find(sub => timeInMs < sub.start);
-          
+          const nextSubtitle = subtitles.find((sub) => timeInMs < sub.start);
+
           // Display the last subtitle if there's no next subtitle yet, or if we're still before the next one
           if (!nextSubtitle || timeInMs < nextSubtitle.start) {
             displaySubtitle = lastEndedSubtitle;
           }
         }
       }
-      
+
       setCurrentSubtitle(displaySubtitle || null);
     } else {
       // Normal behavior when auto-pause is disabled
-      const subtitle = subtitles.find(sub => 
-        timeInMs >= sub.start && timeInMs <= sub.end
-      );
+      const subtitle = subtitles.find((sub) => timeInMs >= sub.start && timeInMs <= sub.end);
       setCurrentSubtitle(subtitle || null);
     }
   }, [currentTime, subtitles, autoPauseEnabled]);
@@ -96,37 +92,37 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     e.preventDefault();
     setIsDragging(true);
     setDragStart({
-      x: e.clientX - (subtitlePosition.x * window.innerWidth / 100),
-      y: e.clientY - (subtitlePosition.y * window.innerHeight / 100)
+      x: e.clientX - (subtitlePosition.x * window.innerWidth) / 100,
+      y: e.clientY - (subtitlePosition.y * window.innerHeight) / 100,
     });
   };
 
   // Reset subtitle position to default
-  const resetSubtitlePosition = () => {
+  const resetSubtitlePosition = useCallback(() => {
     const defaultPosition = { x: 50, y: 85 };
     setSubtitlePosition(defaultPosition);
     localStorage.setItem('subtitlePosition', JSON.stringify(defaultPosition));
-  };
+  }, []);
 
   // Trigger reset when resetPositionTrigger changes
   useEffect(() => {
     if (resetPositionTrigger && resetPositionTrigger > 0) {
       resetSubtitlePosition();
     }
-  }, [resetPositionTrigger]);
+  }, [resetPositionTrigger, resetSubtitlePosition]);
 
   // Add global mouse event listeners for dragging
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging) return;
-      
+
       const newX = ((e.clientX - dragStart.x) / window.innerWidth) * 100;
       const newY = ((e.clientY - dragStart.y) / window.innerHeight) * 100;
-      
+
       // Constrain position within video container bounds (5% margin)
       const constrainedX = Math.max(5, Math.min(95, newX));
       const constrainedY = Math.max(5, Math.min(95, newY));
-      
+
       const newPosition = { x: constrainedX, y: constrainedY };
       setSubtitlePosition(newPosition);
       localStorage.setItem('subtitlePosition', JSON.stringify(newPosition));
@@ -139,13 +135,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
-      
+
       return () => {
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, dragStart, subtitlePosition.x, subtitlePosition.y]);
+  }, [isDragging, dragStart]);
 
   return (
     <div className="video-player">
@@ -160,22 +156,25 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             className="video-element"
           />
           {currentSubtitle && (
-            <div 
+            <div
               className="subtitle-overlay"
-              style={{ 
+              style={{
                 fontSize: `${subtitleFontSize}rem`,
                 left: `${subtitlePosition.x}%`,
                 top: `${subtitlePosition.y}%`,
                 bottom: 'auto',
                 transform: 'translate(-50%, -50%)',
                 cursor: isDragging ? 'grabbing' : 'grab',
-                userSelect: 'none'
+                userSelect: 'none',
               }}
               onMouseDown={handleSubtitleMouseDown}
               title="Drag to reposition subtitles"
+              role="button"
+              tabIndex={0}
+              aria-label="Draggable subtitle text"
             >
               {currentSubtitle.text.split('\n').map((line, idx) => (
-                <div key={idx}>{line}</div>
+                <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>{line}</div>
               ))}
             </div>
           )}

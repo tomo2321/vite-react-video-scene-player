@@ -5,7 +5,7 @@ import './SubtitlePanel.css';
 const SubtitlePanel: React.FC<SubtitlePanelProps> = ({
   subtitles,
   currentTime,
-  onSubtitleClick
+  onSubtitleClick,
 }) => {
   const timeInMs = currentTime * 1000;
 
@@ -18,7 +18,7 @@ const SubtitlePanel: React.FC<SubtitlePanelProps> = ({
             const isActive = timeInMs >= subtitle.start && timeInMs <= subtitle.end;
             return (
               <SubtitleLine
-                key={index}
+                key={`subtitle-${subtitle.start}-${subtitle.end}-${index}`}
                 subtitle={subtitle}
                 isActive={isActive}
                 onClick={onSubtitleClick}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import './ResizableSplitter.css';
 
 interface ResizableSplitterProps {
@@ -12,7 +12,7 @@ const ResizableSplitter: React.FC<ResizableSplitterProps> = ({
   onResize,
   initialLeftWidth = 70, // percentage
   minLeftWidth = 30,
-  maxLeftWidth = 85
+  maxLeftWidth = 85,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [leftWidth, setLeftWidth] = useState(initialLeftWidth);
@@ -22,18 +22,21 @@ const ResizableSplitter: React.FC<ResizableSplitterProps> = ({
     setIsDragging(true);
   }, []);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging) return;
 
-    const containerWidth = window.innerWidth;
-    const newLeftWidth = (e.clientX / containerWidth) * 100;
-    
-    // Clamp the width within bounds
-    const clampedWidth = Math.max(minLeftWidth, Math.min(maxLeftWidth, newLeftWidth));
-    
-    setLeftWidth(clampedWidth);
-    onResize(clampedWidth);
-  }, [isDragging, minLeftWidth, maxLeftWidth, onResize]);
+      const containerWidth = window.innerWidth;
+      const newLeftWidth = (e.clientX / containerWidth) * 100;
+
+      // Clamp the width within bounds
+      const clampedWidth = Math.max(minLeftWidth, Math.min(maxLeftWidth, newLeftWidth));
+
+      setLeftWidth(clampedWidth);
+      onResize(clampedWidth);
+    },
+    [isDragging, minLeftWidth, maxLeftWidth, onResize]
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -65,6 +68,9 @@ const ResizableSplitter: React.FC<ResizableSplitterProps> = ({
       className={`resizable-splitter ${isDragging ? 'dragging' : ''}`}
       onMouseDown={handleMouseDown}
       style={{ left: `${leftWidth}%` }}
+      role="button"
+      tabIndex={0}
+      aria-label="Resize panels"
     >
       <div className="splitter-handle" />
     </div>
