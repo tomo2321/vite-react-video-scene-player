@@ -10,6 +10,8 @@ export interface Subtitle {
   text: string;
   /** Optional subtitle index/sequence number */
   index?: number;
+  /** Whether this subtitle is selected */
+  selected?: boolean;
 }
 
 /**
@@ -44,6 +46,16 @@ export interface SubtitlePanelProps {
   currentTime: number;
   /** Callback when subtitle is clicked */
   onSubtitleClick: (subtitle: Subtitle) => void;
+  /** Callback when subtitle selection changes */
+  onSubtitleSelectionChange: (subtitleIndex: number, selected: boolean) => void;
+  /** Callback to download selected subtitles */
+  onDownloadSelected: () => void;
+  /** Callback to preview selected subtitles */
+  onPreviewSelected: () => void;
+  /** Callback to select all subtitles */
+  onSelectAll: () => void;
+  /** Callback to clear all selections */
+  onClearSelection: () => void;
 }
 
 /**
@@ -66,4 +78,18 @@ export interface SubtitleLineProps {
   isActive: boolean;
   /** Callback when subtitle line is clicked */
   onClick: (subtitle: Subtitle) => void;
+  /** Callback when checkbox is toggled */
+  onSelectionChange: (selected: boolean) => void;
+}
+
+/**
+ * Props for the PreviewModal component
+ */
+export interface PreviewModalProps {
+  /** Whether the modal is open */
+  isOpen: boolean;
+  /** Callback to close the modal */
+  onClose: () => void;
+  /** Array of selected subtitles to preview */
+  subtitles: Subtitle[];
 }

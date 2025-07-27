@@ -27,14 +27,36 @@
   box-shadow: 0 2px 8px rgba(0, 122, 204, 0.3);
 }
 
+.subtitle-line.selected {
+  background-color: #fff3cd;
+  border-left-color: #ffc107;
+}
+
+.subtitle-line.selected:hover {
+  background-color: #ffecb5;
+}
+
+.subtitle-line.selected.active {
+  background-color: #f39c12;
+  color: white;
+  border-left-color: #e67e22;
+}
+
+.subtitle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.25rem;
+}
+
 .subtitle-time {
   font-size: 0.8rem;
   font-weight: 600;
-  margin-bottom: 0.25rem;
   opacity: 0.8;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex: 1;
 }
 
 .subtitle-index {
@@ -50,6 +72,29 @@
 .subtitle-line.active .subtitle-index {
   background-color: rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.9);
+}
+
+.subtitle-line.selected .subtitle-index {
+  background-color: #ffc107;
+  color: #856404;
+}
+
+.subtitle-line.selected.active .subtitle-index {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.subtitle-checkbox-container {
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.subtitle-checkbox {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: #007acc;
 }
 
 .subtitle-line.active .subtitle-time {

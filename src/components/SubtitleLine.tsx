@@ -2,7 +2,12 @@ import { useEffect, useRef } from 'react';
 import type { SubtitleLineProps } from '../types';
 import './SubtitleLine.css';
 
-const SubtitleLine: React.FC<SubtitleLineProps> = ({ subtitle, isActive, onClick }) => {
+const SubtitleLine: React.FC<SubtitleLineProps> = ({
+  subtitle,
+  isActive,
+  onClick,
+  onSelectionChange,
+}) => {
   const lineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,10 +30,15 @@ const SubtitleLine: React.FC<SubtitleLineProps> = ({ subtitle, isActive, onClick
     onClick(subtitle);
   };
 
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.stopPropagation(); // Prevent triggering the subtitle click
+    onSelectionChange(event.target.checked);
+  };
+
   return (
     <div
       ref={lineRef}
-      className={`subtitle-line ${isActive ? 'active' : ''}`}
+      className={`subtitle-line ${isActive ? 'active' : ''} ${subtitle.selected ? 'selected' : ''}`}
       onClick={handleClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -39,9 +49,20 @@ const SubtitleLine: React.FC<SubtitleLineProps> = ({ subtitle, isActive, onClick
       role="button"
       tabIndex={0}
     >
-      <div className="subtitle-time">
-        {subtitle.index && <span className="subtitle-index">#{subtitle.index}</span>}
-        {formatTime(subtitle.start)} - {formatTime(subtitle.end)}
+      <div className="subtitle-header">
+        <div className="subtitle-time">
+          {subtitle.index && <span className="subtitle-index">#{subtitle.index}</span>}
+          {formatTime(subtitle.start)} - {formatTime(subtitle.end)}
+        </div>
+        <div className="subtitle-checkbox-container">
+          <input
+            type="checkbox"
+            checked={subtitle.selected || false}
+            onChange={handleCheckboxChange}
+            className="subtitle-checkbox"
+            aria-label={`Select subtitle ${subtitle.index || 'item'}`}
+          />
+        </div>
       </div>
       <div className="subtitle-text">
         {subtitle.text.split('\n').map((line, idx) => (

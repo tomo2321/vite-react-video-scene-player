@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import FileUploader from './components/FileUploader';
+import PreviewModal from './components/PreviewModal';
 import ResizableSplitter from './components/ResizableSplitter';
 import SubtitlePanel from './components/SubtitlePanel';
 import VideoPlayer from './components/VideoPlayer';
@@ -23,6 +24,7 @@ function App() {
     return saved ? parseFloat(saved) : 1.2;
   });
   const [resetSubtitlePositionTrigger, setResetSubtitlePositionTrigger] = useState(0);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -126,6 +128,59 @@ function App() {
 
   const handleResetSubtitlePosition = () => {
     setResetSubtitlePositionTrigger((prev) => prev + 1);
+  };
+
+  const handleSubtitleSelectionChange = (subtitleIndex: number, selected: boolean) => {
+    setSubtitles((prevSubtitles) =>
+      prevSubtitles.map((subtitle, index) =>
+        index === subtitleIndex ? { ...subtitle, selected } : subtitle
+      )
+    );
+  };
+
+  const handleDownloadSelected = () => {
+    const selectedSubtitles = subtitles.filter((subtitle) => subtitle.selected);
+
+    if (selectedSubtitles.length === 0) {
+      alert('No subtitles selected for download');
+      return;
+    }
+
+    const dataStr = JSON.stringify(selectedSubtitles, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `selected-subtitles-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  };
+
+  const handlePreviewSelected = () => {
+    const selectedSubtitles = subtitles.filter((subtitle) => subtitle.selected);
+
+    if (selectedSubtitles.length === 0) {
+      alert('No subtitles selected for preview');
+      return;
+    }
+
+    setIsPreviewModalOpen(true);
+  };
+
+  const handleSelectAll = () => {
+    setSubtitles((prevSubtitles) =>
+      prevSubtitles.map((subtitle) => ({ ...subtitle, selected: true }))
+    );
+  };
+
+  const handleClearSelection = () => {
+    setSubtitles((prevSubtitles) =>
+      prevSubtitles.map((subtitle) => ({ ...subtitle, selected: false }))
+    );
   };
 
   // Close settings popup with Escape key
@@ -272,9 +327,20 @@ function App() {
             subtitles={subtitles}
             currentTime={currentTime}
             onSubtitleClick={handleSubtitleClick}
+            onSubtitleSelectionChange={handleSubtitleSelectionChange}
+            onDownloadSelected={handleDownloadSelected}
+            onPreviewSelected={handlePreviewSelected}
+            onSelectAll={handleSelectAll}
+            onClearSelection={handleClearSelection}
           />
         </div>
       </main>
+
+      <PreviewModal
+        isOpen={isPreviewModalOpen}
+        onClose={() => setIsPreviewModalOpen(false)}
+        subtitles={subtitles.filter((subtitle) => subtitle.selected)}
+      />
     </div>
   );
 }
