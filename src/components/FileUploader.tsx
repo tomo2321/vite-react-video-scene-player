@@ -41,11 +41,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onVideoLoad, onSubtitlesLoa
           throw new Error('No subtitles found in file');
         }
 
-        const subtitles: Subtitle[] = parsed.map((item, index: number) => ({
+        const subtitles: Subtitle[] = parsed.map((item) => ({
           start: item.start,
           end: item.end,
           text: cleanSubtitleText(item.text),
-          index,
+          index: item.index,
         }));
 
         console.log('Final subtitles:', subtitles); // Debug log
@@ -59,7 +59,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onVideoLoad, onSubtitlesLoa
     }
   };
 
-  const manualSrtParse = (content: string) => {
+  const manualSrtParse = (
+    content: string
+  ): Array<{ start: number; end: number; text: string; index: number }> => {
     const subtitles = [];
 
     // Split by double newlines to separate subtitle blocks
@@ -97,6 +99,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onVideoLoad, onSubtitlesLoa
           start,
           end,
           text,
+          index: parseInt(sequenceNumber),
         });
       }
     }
@@ -105,8 +108,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onVideoLoad, onSubtitlesLoa
     return subtitles;
   };
 
-  const manualVttParse = (content: string) => {
+  const manualVttParse = (
+    content: string
+  ): Array<{ start: number; end: number; text: string; index: number }> => {
     const subtitles = [];
+    let vttIndex = 1; // Start VTT index counter
 
     // Remove WEBVTT header and any metadata
     const cleanContent = content.replace(/^WEBVTT.*?\n\n/s, '');
@@ -160,6 +166,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onVideoLoad, onSubtitlesLoa
           start,
           end,
           text,
+          index: vttIndex++,
         });
       }
     }

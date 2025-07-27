@@ -40,6 +40,7 @@ const SubtitleLine: React.FC<SubtitleLineProps> = ({ subtitle, isActive, onClick
       tabIndex={0}
     >
       <div className="subtitle-time">
+        {subtitle.index && <span className="subtitle-index">#{subtitle.index}</span>}
         {formatTime(subtitle.start)} - {formatTime(subtitle.end)}
       </div>
       <div className="subtitle-text">
