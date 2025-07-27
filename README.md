@@ -1,12 +1,13 @@
 # Video Scene Player
 
-A React-based web application for interactive video playback with synchronized subtitle functionality. Load local video files and SRT subtitle files, then click on subtitle lines to jump to corresponding video scenes.
+A React-based web application for interactive video playback with synchronized subtitle functionality. Load local video files and SRT or VTT subtitle files, then click on subtitle lines to jump to corresponding video scenes.
 
 ## Features
 
 - 📹 **Video Playback**: Load and play local video files
 - 📝 **Subtitle Support**: Parse and display SRT and VTT subtitle files
 - 🎯 **Interactive Navigation**: Click subtitle lines to jump to specific video scenes
+- ⏸️ **Auto-Pause Mode**: Toggle auto-pause to stop video at each subtitle transition
 - 🎬 **Subtitle Overlay**: Display subtitles overlaid on the video player
 - 📱 **Responsive Design**: Works on desktop and mobile devices
 - ⚡ **Real-time Sync**: Automatic highlighting of current subtitle based on video time
@@ -45,10 +46,13 @@ A React-based web application for interactive video playback with synchronized s
 
 1. **Load a Video**: Click the "📹 Load Video" button to select a local video file (MP4, WebM, AVI, etc.)
 2. **Load Subtitle**: Click the "📝 Load Subtitle" button to select an SRT or VTT subtitle file
-3. **Interactive Playback**:
+3. **Auto-Pause Mode** (Optional): Toggle the "⏸️ Auto-pause" button to enable/disable automatic pausing at subtitle transitions
+4. **Interactive Playback**:
    - Click any subtitle line in the right panel to jump to that scene
    - The video will automatically play from the selected timestamp
    - Current subtitle is highlighted both in the panel and overlaid on the video
+   - With auto-pause enabled: Video automatically pauses when transitioning to each new subtitle
+   - With auto-pause enabled: Clicking a subtitle jumps to that scene and continues playing until the next subtitle
 
 ### Supported Formats
 
@@ -60,7 +64,7 @@ A React-based web application for interactive video playback with synchronized s
 - **React 18** - UI framework
 - **TypeScript** - Type safety
 - **Vite** - Build tool and dev server
-- **subsrt** - SRT subtitle parsing
+- **Custom Parsers** - Manual SRT and VTT subtitle parsing
 - **CSS3** - Styling and animations
 
 ## Project Structure
@@ -90,11 +94,15 @@ src/
 
 The application is designed to be extensible. Some ideas for enhancement:
 
-- Support for additional subtitle formats (VTT, ASS)
+- ✅ **Auto-pause mode** - Implemented! Automatically pause at subtitle transitions
+- ✅ **VTT support** - Implemented! Support for WebVTT subtitle format
+- Support for additional subtitle formats (ASS, SUB)
 - Video playback speed controls
 - Subtitle text search functionality
 - Keyboard shortcuts for navigation
+- Loop mode for current subtitle
 - Export functionality for edited subtitles
+- Subtitle timing adjustment tools
 
 ## Browser Compatibility
 
