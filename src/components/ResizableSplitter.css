@@ -1,0 +1,51 @@
+.resizable-splitter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background-color: transparent;
+  cursor: col-resize;
+  z-index: 10;
+  transform: translateX(-3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resizable-splitter:hover {
+  background-color: rgba(0, 122, 204, 0.2);
+}
+
+.resizable-splitter.dragging {
+  background-color: rgba(0, 122, 204, 0.4);
+}
+
+.splitter-handle {
+  width: 2px;
+  height: 40px;
+  background-color: #ccc;
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.resizable-splitter:hover .splitter-handle,
+.resizable-splitter.dragging .splitter-handle {
+  opacity: 1;
+  background-color: #007acc;
+}
+
+/* Prevent text selection during drag */
+.resizable-splitter.dragging * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+@media (max-width: 768px) {
+  .resizable-splitter {
+    display: none;
+  }
+}

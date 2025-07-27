@@ -1,0 +1,54 @@
+.subtitle-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow: hidden;
+  contain: layout style;
+}
+
+.subtitle-panel h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  color: #333;
+  border-bottom: 2px solid #007acc;
+  padding-bottom: 0.5rem;
+}
+
+.subtitle-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+  min-height: 0;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  contain: layout style;
+  isolation: isolate;
+}
+
+.subtitle-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.subtitle-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.subtitle-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.subtitle-list::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+.no-subtitles {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+  margin: 0;
+}
