@@ -146,6 +146,13 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-bottom: 20px;
+}
+
+.position-control {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .control-label {
@@ -206,6 +213,29 @@
   border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
+.reset-position-button {
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.reset-position-button:hover {
+  background-color: #444;
+  border-color: #666;
+}
+
+.position-hint {
+  color: #ccc;
+  font-size: 0.8rem;
+  text-align: center;
+  font-style: italic;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .header-controls {
@@ -257,6 +287,15 @@
 
   .size-display {
     font-size: 0.85rem;
+  }
+
+  .reset-position-button {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  .position-hint {
+    font-size: 0.75rem;
   }
 }
 

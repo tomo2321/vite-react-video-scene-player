@@ -30,6 +30,8 @@ export interface VideoPlayerProps {
   autoPauseEnabled: boolean;
   /** Subtitle font size in rem units */
   subtitleFontSize: number;
+  /** Trigger number to reset subtitle position (increment to trigger reset) */
+  resetPositionTrigger?: number;
 }
 
 /**

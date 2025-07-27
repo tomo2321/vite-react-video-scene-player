@@ -1,31 +1,4 @@
-# Vi## Features
-
-- 📹 **Video Playback**: Load and play local video files
-- 📝 **Subtitle Support**: Parse### Adding Features
-
-The application is designed to be extensible. Some ideas for enhancement:
-
-- ✅ **Auto-pause mode** - Implemented! Automatically pause at subtitle end times
-- ✅ **VTT support** - Implemented! Support for WebVTT subtitle format
-- ✅ **Settings panel** - Implemented! Adjustable subtitle text size with persistent storage
-- ✅ **Extended subtitle display** - Implemented! Subtitles remain visible during auto-pause
-- Support for additional subtitle formats (ASS, SUB)
-- Video playback speed controls
-- Subtitle text search functionality
-- Keyboard shortcuts for navigation
-- Loop mode for current subtitle
-- Export functionality for edited subtitles
-- Subtitle timing adjustment tools
-- Theme customization (dark/light mode)
-- Subtitle position adjustment
-- Multiple subtitle track supportSRT and VTT subtitle files
-- 🎯 **Interactive Navigation**: Click subtitle lines to jump to specific video scenes
-- ⏸️ **Auto-Pause Mode**: Toggle auto-pause to stop video at each subtitle end
-- 🎬 **Subtitle Overlay**: Display subtitles overlaid on the video player with adjustable size
-- ⚙️ **Settings Panel**: Customize subtitle appearance with easy-to-use controls
-- 📱 **Responsive Design**: Works on desktop and mobile devices
-- ⚡ **Real-time Sync**: Automatic highlighting of current subtitle based on video time
-- 💾 **Persistent Settings**: User preferences saved automatically across sessions Player
+# Video Scene Player
 
 A React-based web application for interactive video playback with synchronized subtitle functionality. Load local video files and SRT or VTT subtitle files, then click on subtitle lines to jump to corresponding video scenes.
 
@@ -34,10 +7,13 @@ A React-based web application for interactive video playback with synchronized s
 - 📹 **Video Playback**: Load and play local video files
 - 📝 **Subtitle Support**: Parse and display SRT and VTT subtitle files
 - 🎯 **Interactive Navigation**: Click subtitle lines to jump to specific video scenes
-- ⏸️ **Auto-Pause Mode**: Toggle auto-pause to stop video at each subtitle transition
-- 🎬 **Subtitle Overlay**: Display subtitles overlaid on the video player
+- ⏸️ **Auto-Pause Mode**: Toggle auto-pause to stop video at each subtitle end
+- 🎬 **Subtitle Overlay**: Display subtitles overlaid on the video player with adjustable size
+- 🖱️ **Draggable Subtitles**: Click and drag subtitles on the video to reposition them
+- ⚙️ **Settings Panel**: Customize subtitle appearance with easy-to-use controls
 - 📱 **Responsive Design**: Works on desktop and mobile devices
 - ⚡ **Real-time Sync**: Automatic highlighting of current subtitle based on video time
+- 💾 **Persistent Settings**: User preferences saved automatically across sessions
 
 ## Getting Started
 
@@ -76,9 +52,11 @@ A React-based web application for interactive video playback with synchronized s
 3. **Auto-Pause Mode** (Optional): Toggle the "⏸️ Auto-pause" button to enable/disable automatic pausing at subtitle end times
 4. **Settings** (Optional): Click the "⚙️" settings button to:
    - Adjust subtitle text size (0.8rem to 2.5rem)
+   - Reset subtitle position to default
    - Preferences are automatically saved
 5. **Interactive Playback**:
    - Click any subtitle line in the right panel to jump to that scene
+   - **Drag subtitles** on the video to reposition them anywhere on screen
    - The video will automatically play from the selected timestamp
    - Current subtitle is highlighted both in the panel and overlaid on the video
    - With auto-pause enabled: Video automatically pauses at the end of each subtitle
@@ -126,8 +104,11 @@ src/
 
 The application is designed to be extensible. Some ideas for enhancement:
 
-- ✅ **Auto-pause mode** - Implemented! Automatically pause at subtitle transitions
+- ✅ **Auto-pause mode** - Implemented! Automatically pause at subtitle end times
 - ✅ **VTT support** - Implemented! Support for WebVTT subtitle format
+- ✅ **Settings panel** - Implemented! Adjustable subtitle text size with persistent storage
+- ✅ **Extended subtitle display** - Implemented! Subtitles remain visible during auto-pause
+- ✅ **Draggable subtitles** - Implemented! Click and drag to reposition subtitles
 - Support for additional subtitle formats (ASS, SUB)
 - Video playback speed controls
 - Subtitle text search functionality
@@ -135,6 +116,8 @@ The application is designed to be extensible. Some ideas for enhancement:
 - Loop mode for current subtitle
 - Export functionality for edited subtitles
 - Subtitle timing adjustment tools
+- Theme customization (dark/light mode)
+- Multiple subtitle track support
 
 ## Browser Compatibility
 
@@ -146,34 +129,3 @@ The application is designed to be extensible. Some ideas for enhancement:
 ## License
 
 MIT License
-
-````
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-````

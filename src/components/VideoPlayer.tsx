@@ -9,11 +9,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   onTimeUpdate,
   onVideoRef,
   autoPauseEnabled,
-  subtitleFontSize
+  subtitleFontSize,
+  resetPositionTrigger
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoUrl, setVideoUrl] = useState<string>('');
   const [currentSubtitle, setCurrentSubtitle] = useState<Subtitle | null>(null);
+  const [subtitlePosition, setSubtitlePosition] = useState(() => {
+    // Load saved position from localStorage or use default
+    const saved = localStorage.getItem('subtitlePosition');
+    return saved ? JSON.parse(saved) : { x: 50, y: 85 }; // Default: center horizontally, near bottom
+  });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (videoRef.current) {
@@ -83,6 +91,62 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   };
 
+  // Subtitle dragging handlers
+  const handleSubtitleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - (subtitlePosition.x * window.innerWidth / 100),
+      y: e.clientY - (subtitlePosition.y * window.innerHeight / 100)
+    });
+  };
+
+  // Reset subtitle position to default
+  const resetSubtitlePosition = () => {
+    const defaultPosition = { x: 50, y: 85 };
+    setSubtitlePosition(defaultPosition);
+    localStorage.setItem('subtitlePosition', JSON.stringify(defaultPosition));
+  };
+
+  // Trigger reset when resetPositionTrigger changes
+  useEffect(() => {
+    if (resetPositionTrigger && resetPositionTrigger > 0) {
+      resetSubtitlePosition();
+    }
+  }, [resetPositionTrigger]);
+
+  // Add global mouse event listeners for dragging
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      
+      const newX = ((e.clientX - dragStart.x) / window.innerWidth) * 100;
+      const newY = ((e.clientY - dragStart.y) / window.innerHeight) * 100;
+      
+      // Constrain position within video container bounds (5% margin)
+      const constrainedX = Math.max(5, Math.min(95, newX));
+      const constrainedY = Math.max(5, Math.min(95, newY));
+      
+      const newPosition = { x: constrainedX, y: constrainedY };
+      setSubtitlePosition(newPosition);
+      localStorage.setItem('subtitlePosition', JSON.stringify(newPosition));
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, dragStart, subtitlePosition.x, subtitlePosition.y]);
+
   return (
     <div className="video-player">
       {videoUrl ? (
@@ -98,7 +162,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           {currentSubtitle && (
             <div 
               className="subtitle-overlay"
-              style={{ fontSize: `${subtitleFontSize}rem` }}
+              style={{ 
+                fontSize: `${subtitleFontSize}rem`,
+                left: `${subtitlePosition.x}%`,
+                top: `${subtitlePosition.y}%`,
+                bottom: 'auto',
+                transform: 'translate(-50%, -50%)',
+                cursor: isDragging ? 'grabbing' : 'grab',
+                userSelect: 'none'
+              }}
+              onMouseDown={handleSubtitleMouseDown}
+              title="Drag to reposition subtitles"
             >
               {currentSubtitle.text.split('\n').map((line, idx) => (
                 <div key={idx}>{line}</div>

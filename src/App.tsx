@@ -22,6 +22,7 @@ function App() {
     const saved = localStorage.getItem('subtitleFontSize');
     return saved ? parseFloat(saved) : 1.2;
   });
+  const [resetSubtitlePositionTrigger, setResetSubtitlePositionTrigger] = useState(0);
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -118,6 +119,10 @@ function App() {
     localStorage.setItem('subtitleFontSize', newSize.toString())
   }
 
+  const handleResetSubtitlePosition = () => {
+    setResetSubtitlePositionTrigger(prev => prev + 1)
+  }
+
   // Close settings popup with Escape key
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -192,6 +197,20 @@ function App() {
                 />
                 <span className="size-display">{subtitleFontSize.toFixed(1)}rem</span>
               </div>
+              
+              <div className="position-control">
+                <label className="control-label">
+                  Subtitle Position
+                </label>
+                <button
+                  onClick={handleResetSubtitlePosition}
+                  className="reset-position-button"
+                  title="Reset subtitle position to default (center bottom)"
+                >
+                  Reset Position
+                </button>
+                <span className="position-hint">Drag subtitles on video to reposition</span>
+              </div>
             </div>
           </div>
         </>
@@ -216,6 +235,7 @@ function App() {
             onVideoRef={setVideoRef}
             autoPauseEnabled={autoPauseEnabled}
             subtitleFontSize={subtitleFontSize}
+            resetPositionTrigger={resetSubtitlePositionTrigger}
           />
         </div>
         
