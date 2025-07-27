@@ -5,7 +5,7 @@ A React-based web application for interactive video playback with synchronized s
 ## Features
 
 - 📹 **Video Playback**: Load and play local video files
-- 📝 **Subtitle Support**: Parse and display SRT subtitle files
+- 📝 **Subtitle Support**: Parse and display SRT and VTT subtitle files
 - 🎯 **Interactive Navigation**: Click subtitle lines to jump to specific video scenes
 - 🎬 **Subtitle Overlay**: Display subtitles overlaid on the video player
 - 📱 **Responsive Design**: Works on desktop and mobile devices
@@ -44,7 +44,7 @@ A React-based web application for interactive video playback with synchronized s
 ### Usage
 
 1. **Load a Video**: Click the "📹 Load Video" button to select a local video file (MP4, WebM, AVI, etc.)
-2. **Load Subtitles**: Click the "📝 Load Subtitles" button to select an SRT subtitle file
+2. **Load Subtitle**: Click the "📝 Load Subtitle" button to select an SRT or VTT subtitle file
 3. **Interactive Playback**:
    - Click any subtitle line in the right panel to jump to that scene
    - The video will automatically play from the selected timestamp
@@ -53,7 +53,7 @@ A React-based web application for interactive video playback with synchronized s
 ### Supported Formats
 
 - **Video**: MP4, WebM, AVI, MOV, and other formats supported by HTML5 video
-- **Subtitles**: SRT (SubRip Text) format
+- **Subtitles**: SRT (SubRip Text) and VTT (WebVTT) formats
 
 ## Technology Stack
 

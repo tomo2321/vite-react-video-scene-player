@@ -30,12 +30,15 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           .replace(/\r/g, '\n')    // Handle old Mac line endings
           .trim();
         
-        console.log('Raw SRT content:', cleanText.substring(0, 500)); // Debug log
+        console.log('Raw subtitle content:', cleanText.substring(0, 500)); // Debug log
         
-        // Use manual parsing for better control
-        const parsed = manualSrtParse(cleanText);
+        // Detect file format and use appropriate parser
+        const fileExtension = file.name.toLowerCase().split('.').pop();
+        const isVtt = fileExtension === 'vtt' || cleanText.startsWith('WEBVTT');
         
-        console.log('Parsed subtitles:', parsed); // Debug log
+        const parsed = isVtt ? manualVttParse(cleanText) : manualSrtParse(cleanText);
+        
+        console.log(`Parsed ${parsed.length} ${isVtt ? 'VTT' : 'SRT'} subtitles:`, parsed); // Debug log
         
         if (!parsed || parsed.length === 0) {
           throw new Error('No subtitles found in file');
@@ -101,12 +104,75 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     return subtitles;
   };
 
+  const manualVttParse = (content: string) => {
+    const subtitles = [];
+    
+    // Remove WEBVTT header and any metadata
+    const cleanContent = content.replace(/^WEBVTT.*?\n\n/s, '');
+    
+    // Split by double newlines to separate subtitle blocks
+    const blocks = cleanContent.split(/\n\s*\n/);
+    
+    for (let i = 0; i < blocks.length; i++) {
+      const block = blocks[i].trim();
+      if (!block) continue;
+      
+      const lines = block.split('\n');
+      if (lines.length < 2) continue;
+      
+      let timecodeLineIndex = 0;
+      let textStartIndex = 1;
+      
+      // Check if first line is an optional identifier/cue ID
+      if (!lines[0].includes('-->')) {
+        timecodeLineIndex = 1;
+        textStartIndex = 2;
+        if (lines.length < 3) continue;
+      }
+      
+      // Parse timecode line (format: 00:00:00.000 --> 00:00:00.000)
+      const timecodeLine = lines[timecodeLineIndex].trim();
+      const timecodeMatch = timecodeLine.match(/(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\.(\d{3})/);
+      
+      if (!timecodeMatch) continue;
+      
+      // Convert VTT time format to milliseconds
+      const startHours = parseInt(timecodeMatch[1]);
+      const startMinutes = parseInt(timecodeMatch[2]);
+      const startSeconds = parseInt(timecodeMatch[3]);
+      const startMs = parseInt(timecodeMatch[4]);
+      const start = (startHours * 3600 + startMinutes * 60 + startSeconds) * 1000 + startMs;
+      
+      const endHours = parseInt(timecodeMatch[5]);
+      const endMinutes = parseInt(timecodeMatch[6]);
+      const endSecondsVal = parseInt(timecodeMatch[7]);
+      const endMsVal = parseInt(timecodeMatch[8]);
+      const end = (endHours * 3600 + endMinutes * 60 + endSecondsVal) * 1000 + endMsVal;
+      
+      // Join remaining lines as subtitle text
+      const text = lines.slice(textStartIndex).join('\n').trim();
+      
+      if (text) {
+        subtitles.push({
+          start,
+          end,
+          text
+        });
+      }
+    }
+    
+    console.log(`Parsed ${subtitles.length} VTT subtitle entries`);
+    return subtitles;
+  };
+
   const cleanSubtitleText = (text: string): string => {
     if (!text) return '';
     
     return text
-      // Remove HTML tags
+      // Remove HTML tags (common in both SRT and VTT)
       .replace(/<[^>]*>/g, '')
+      // Remove VTT cue settings (position, alignment, etc.)
+      .replace(/\s*(align|position|size|line|vertical|region):[^\s]*/g, '')
       // Replace common SRT formatting
       .replace(/\{[^}]*\}/g, '')  // Remove {formatting}
       .replace(/\\N/g, '\n')      // Replace \N with newlines
@@ -150,7 +216,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
       <div className="upload-section">
         <button onClick={triggerSubtitleUpload} className="upload-button">
-          📝 Load Subtitles
+          📝 Load Subtitle (SRT/VTT)
         </button>
         <input
           ref={subtitleInputRef}
