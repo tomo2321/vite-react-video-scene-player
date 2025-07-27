@@ -32,7 +32,7 @@ This is a React + TypeScript + Vite web application for video playback with inte
 
 ## Important Libraries
 
-- `subsrt`: For parsing SRT subtitle files
+- Custom manual parsers for SRT and VTT subtitle files
 - React built-in video controls or custom video player
 - File API for local file handling
 

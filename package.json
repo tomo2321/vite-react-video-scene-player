@@ -19,8 +19,7 @@
   },
   "dependencies": {
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "subsrt": "^1.1.1"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
