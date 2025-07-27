@@ -11,6 +11,7 @@ export interface VideoPlayerProps {
   currentTime: number;
   onTimeUpdate: (time: number) => void;
   onVideoRef: (ref: HTMLVideoElement | null) => void;
+  autoPauseEnabled: boolean;
 }
 
 export interface SubtitlePanelProps {

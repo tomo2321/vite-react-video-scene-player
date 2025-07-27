@@ -143,6 +143,7 @@ function App() {
             currentTime={currentTime}
             onTimeUpdate={handleTimeUpdate}
             onVideoRef={setVideoRef}
+            autoPauseEnabled={autoPauseEnabled}
           />
         </div>
         

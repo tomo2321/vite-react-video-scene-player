@@ -7,7 +7,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   subtitles,
   currentTime,
   onTimeUpdate,
-  onVideoRef
+  onVideoRef,
+  autoPauseEnabled
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoUrl, setVideoUrl] = useState<string>('');
@@ -33,11 +34,40 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   useEffect(() => {
     // Find current subtitle based on video time with millisecond precision
     const timeInMs = Math.round(currentTime * 1000);
-    const subtitle = subtitles.find(sub => 
-      timeInMs >= sub.start && timeInMs <= sub.end
-    );
-    setCurrentSubtitle(subtitle || null);
-  }, [currentTime, subtitles]);
+    
+    if (autoPauseEnabled) {
+      // When auto-pause is enabled, extend subtitle display until next subtitle starts
+      let displaySubtitle = subtitles.find(sub => 
+        timeInMs >= sub.start && timeInMs <= sub.end
+      );
+      
+      // If no current subtitle, check if we should display the last one until next one starts
+      if (!displaySubtitle) {
+        // Find the last subtitle that ended
+        const lastEndedSubtitle = subtitles
+          .filter(sub => timeInMs > sub.end)
+          .sort((a, b) => b.end - a.end)[0];
+        
+        if (lastEndedSubtitle) {
+          // Check if there's a next subtitle coming up
+          const nextSubtitle = subtitles.find(sub => timeInMs < sub.start);
+          
+          // Display the last subtitle if there's no next subtitle yet, or if we're still before the next one
+          if (!nextSubtitle || timeInMs < nextSubtitle.start) {
+            displaySubtitle = lastEndedSubtitle;
+          }
+        }
+      }
+      
+      setCurrentSubtitle(displaySubtitle || null);
+    } else {
+      // Normal behavior when auto-pause is disabled
+      const subtitle = subtitles.find(sub => 
+        timeInMs >= sub.start && timeInMs <= sub.end
+      );
+      setCurrentSubtitle(subtitle || null);
+    }
+  }, [currentTime, subtitles, autoPauseEnabled]);
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.target as HTMLVideoElement;
