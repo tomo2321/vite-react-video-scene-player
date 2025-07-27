@@ -8,7 +8,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   currentTime,
   onTimeUpdate,
   onVideoRef,
-  autoPauseEnabled
+  autoPauseEnabled,
+  subtitleFontSize
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoUrl, setVideoUrl] = useState<string>('');
@@ -95,7 +96,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             className="video-element"
           />
           {currentSubtitle && (
-            <div className="subtitle-overlay">
+            <div 
+              className="subtitle-overlay"
+              style={{ fontSize: `${subtitleFontSize}rem` }}
+            >
               {currentSubtitle.text.split('\n').map((line, idx) => (
                 <div key={idx}>{line}</div>
               ))}

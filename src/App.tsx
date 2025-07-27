@@ -16,6 +16,12 @@ function App() {
   const [autoPauseEnabled, setAutoPauseEnabled] = useState(false)
   const [manualSeekInProgress, setManualSeekInProgress] = useState(false)
   const [lastPausedSubtitleIndex, setLastPausedSubtitleIndex] = useState<number | null>(null)
+  const [showSettings, setShowSettings] = useState(false)
+  const [subtitleFontSize, setSubtitleFontSize] = useState(() => {
+    // Load saved font size from localStorage or use default
+    const saved = localStorage.getItem('subtitleFontSize');
+    return saved ? parseFloat(saved) : 1.2;
+  });
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -107,6 +113,25 @@ function App() {
     setLastPausedSubtitleIndex(null)
   }
 
+  const handleFontSizeChange = (newSize: number) => {
+    setSubtitleFontSize(newSize)
+    localStorage.setItem('subtitleFontSize', newSize.toString())
+  }
+
+  // Close settings popup with Escape key
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showSettings) {
+        setShowSettings(false)
+      }
+    }
+
+    if (showSettings) {
+      document.addEventListener('keydown', handleKeyDown)
+      return () => document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [showSettings])
+
   return (
     <div className="app">
       <header className="app-header">
@@ -123,8 +148,54 @@ function App() {
           >
             ⏸️ Auto-pause: {autoPauseEnabled ? 'ON' : 'OFF'}
           </button>
+          <button 
+            onClick={() => setShowSettings(!showSettings)}
+            className="settings-button"
+            title="Video Settings"
+          >
+            ⚙️
+          </button>
         </div>
       </header>
+      
+      {/* Settings Popup */}
+      {showSettings && (
+        <>
+          <div 
+            className="settings-backdrop"
+            onClick={() => setShowSettings(false)}
+          />
+          <div className="settings-popup">
+            <div className="settings-header">
+              <h3>Video Settings</h3>
+              <button 
+                className="close-button"
+                onClick={() => setShowSettings(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="settings-content">
+              <div className="font-size-control">
+                <label htmlFor="font-size-slider" className="control-label">
+                  Subtitle Size
+                </label>
+                <input
+                  id="font-size-slider"
+                  type="range"
+                  min="0.8"
+                  max="2.5"
+                  step="0.1"
+                  value={subtitleFontSize}
+                  onChange={(e) => handleFontSizeChange(parseFloat(e.target.value))}
+                  className="font-size-slider"
+                />
+                <span className="size-display">{subtitleFontSize.toFixed(1)}rem</span>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
       
       <main className="app-main">
         <div 
@@ -144,6 +215,7 @@ function App() {
             onTimeUpdate={handleTimeUpdate}
             onVideoRef={setVideoRef}
             autoPauseEnabled={autoPauseEnabled}
+            subtitleFontSize={subtitleFontSize}
           />
         </div>
         
