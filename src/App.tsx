@@ -14,8 +14,8 @@ function App() {
   const [leftPanelWidth, setLeftPanelWidth] = useState(70) // percentage
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const [autoPauseEnabled, setAutoPauseEnabled] = useState(false)
-  const [lastActiveSubtitleIndex, setLastActiveSubtitleIndex] = useState<number | null>(null)
   const [manualSeekInProgress, setManualSeekInProgress] = useState(false)
+  const [lastPausedSubtitleIndex, setLastPausedSubtitleIndex] = useState<number | null>(null)
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -39,13 +39,13 @@ function App() {
       // Set flag to indicate manual seek is in progress
       setManualSeekInProgress(true)
       
-      const timeInSeconds = subtitle.start / 1000 // Convert milliseconds to seconds
+      // Reset the paused subtitle tracking when manually seeking
+      setLastPausedSubtitleIndex(null)
+      
+      // Convert milliseconds to seconds with millisecond precision
+      const timeInSeconds = Math.round(subtitle.start) / 1000
       videoRef.currentTime = timeInSeconds
       setCurrentTime(timeInSeconds) // Update the current time state
-      
-      // Update the last active subtitle index to the clicked subtitle
-      const clickedIndex = subtitles.findIndex(sub => sub.start === subtitle.start && sub.end === subtitle.end)
-      setLastActiveSubtitleIndex(clickedIndex)
       
       videoRef.play()
       
@@ -59,21 +59,41 @@ function App() {
   const handleTimeUpdate = (time: number) => {
     setCurrentTime(time)
     
-    // Auto-pause logic when subtitle changes (skip if manual seek is in progress)
+    // Auto-pause logic: pause at the END of each subtitle (skip if manual seek is in progress)
     if (autoPauseEnabled && videoRef && subtitles.length > 0 && !manualSeekInProgress) {
-      const timeInMs = time * 1000
+      // Convert time to milliseconds with precision
+      const timeInMs = Math.round(time * 1000)
+      
+      // Find current active subtitle
       const currentActiveSubtitleIndex = subtitles.findIndex(subtitle => 
         timeInMs >= subtitle.start && timeInMs <= subtitle.end
       )
       
-      // Check if we've moved to a new subtitle
-      if (lastActiveSubtitleIndex !== null && 
-          currentActiveSubtitleIndex !== lastActiveSubtitleIndex &&
-          currentActiveSubtitleIndex !== -1) {
-        videoRef.pause()
+      // If we have an active subtitle, check if we've reached its end time
+      if (currentActiveSubtitleIndex !== -1) {
+        const currentSubtitle = subtitles[currentActiveSubtitleIndex]
+        
+        // Pause when we reach the end time of the current subtitle (with small tolerance for precision)
+        // Only pause if we haven't already paused for this subtitle
+        if (timeInMs >= currentSubtitle.end - 100 && lastPausedSubtitleIndex !== currentActiveSubtitleIndex) {
+          console.log(`Auto-pausing at end of subtitle ${currentActiveSubtitleIndex + 1}: "${currentSubtitle.text.substring(0, 50)}..."`)
+          videoRef.pause()
+          setLastPausedSubtitleIndex(currentActiveSubtitleIndex)
+        }
       }
-      
-      setLastActiveSubtitleIndex(currentActiveSubtitleIndex)
+      // Also pause if we're between subtitles (no active subtitle) and we haven't paused recently
+      else if (currentActiveSubtitleIndex === -1 && lastPausedSubtitleIndex !== -1) {
+        // Find if we just passed a subtitle
+        const justPassedSubtitleIndex = subtitles.findIndex(subtitle => 
+          timeInMs > subtitle.end && timeInMs <= subtitle.end + 200 // within 200ms after subtitle end
+        )
+        
+        if (justPassedSubtitleIndex !== -1 && lastPausedSubtitleIndex !== justPassedSubtitleIndex) {
+          console.log(`Auto-pausing after subtitle ${justPassedSubtitleIndex + 1} ended`)
+          videoRef.pause()
+          setLastPausedSubtitleIndex(justPassedSubtitleIndex)
+        }
+      }
     }
   }
 
@@ -83,6 +103,8 @@ function App() {
 
   const toggleAutoPause = () => {
     setAutoPauseEnabled(!autoPauseEnabled)
+    // Reset paused subtitle tracking when toggling auto-pause
+    setLastPausedSubtitleIndex(null)
   }
 
   return (

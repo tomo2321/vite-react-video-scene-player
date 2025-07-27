@@ -31,17 +31,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }, [videoFile]);
 
   useEffect(() => {
-    // Find current subtitle based on video time
-    const timeInMs = currentTime * 1000;
+    // Find current subtitle based on video time with millisecond precision
+    const timeInMs = Math.round(currentTime * 1000);
     const subtitle = subtitles.find(sub => 
       timeInMs >= sub.start && timeInMs <= sub.end
     );
     setCurrentSubtitle(subtitle || null);
   }, [currentTime, subtitles]);
 
-    const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.target as HTMLVideoElement;
-    onTimeUpdate(video.currentTime);
+    // Round to millisecond precision for consistent timing
+    const preciseTime = Math.round(video.currentTime * 1000) / 1000;
+    onTimeUpdate(preciseTime);
   };
 
   const handleVideoLoad = () => {
