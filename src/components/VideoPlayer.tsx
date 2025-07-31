@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Subtitle, VideoPlayerProps } from '../types';
+import { convertLettersToUnderscores } from '../utils/textUtils';
 import './VideoPlayer.css';
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -11,6 +12,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   autoPauseEnabled,
   subtitleFontSize,
   resetPositionTrigger,
+  hideLettersEnabled = false,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoUrl, setVideoUrl] = useState<string>('');
@@ -173,9 +175,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               tabIndex={0}
               aria-label="Draggable subtitle text"
             >
-              {currentSubtitle.text.split('\n').map((line, idx) => (
-                <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>{line}</div>
-              ))}
+              {currentSubtitle.text.split('\n').map((line, idx) => {
+                const displayText = hideLettersEnabled ? convertLettersToUnderscores(line) : line;
+                return (
+                  <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>{displayText}</div>
+                );
+              })}
             </div>
           )}
         </div>

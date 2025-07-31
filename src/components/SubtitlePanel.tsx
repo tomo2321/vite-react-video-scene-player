@@ -11,6 +11,7 @@ const SubtitlePanel: React.FC<SubtitlePanelProps> = ({
   onPreviewSelected,
   onSelectAll,
   onClearSelection,
+  hideLettersEnabled = false,
 }) => {
   const timeInMs = currentTime * 1000;
   const selectedCount = subtitles.filter((subtitle) => subtitle.selected).length;
@@ -96,6 +97,7 @@ const SubtitlePanel: React.FC<SubtitlePanelProps> = ({
                 isActive={isActive}
                 onClick={onSubtitleClick}
                 onSelectionChange={(selected) => onSubtitleSelectionChange(index, selected)}
+                hideLettersEnabled={hideLettersEnabled}
               />
             );
           })

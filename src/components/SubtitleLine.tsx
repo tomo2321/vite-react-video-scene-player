@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { SubtitleLineProps } from '../types';
+import { convertLettersToUnderscores } from '../utils/textUtils';
 import './SubtitleLine.css';
 
 const SubtitleLine: React.FC<SubtitleLineProps> = ({
@@ -7,6 +8,7 @@ const SubtitleLine: React.FC<SubtitleLineProps> = ({
   isActive,
   onClick,
   onSelectionChange,
+  hideLettersEnabled = false,
 }) => {
   const lineRef = useRef<HTMLDivElement>(null);
 
@@ -65,9 +67,10 @@ const SubtitleLine: React.FC<SubtitleLineProps> = ({
         </div>
       </div>
       <div className="subtitle-text">
-        {subtitle.text.split('\n').map((line, idx) => (
-          <div key={`line-${idx}-${line.substring(0, 10)}`}>{line}</div>
-        ))}
+        {subtitle.text.split('\n').map((line, idx) => {
+          const displayText = hideLettersEnabled ? convertLettersToUnderscores(line) : line;
+          return <div key={`line-${idx}-${line.substring(0, 10)}`}>{displayText}</div>;
+        })}
       </div>
     </div>
   );

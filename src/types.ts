@@ -34,6 +34,8 @@ export interface VideoPlayerProps {
   subtitleFontSize: number;
   /** Trigger number to reset subtitle position (increment to trigger reset) */
   resetPositionTrigger?: number;
+  /** Whether hide letters mode is enabled */
+  hideLettersEnabled?: boolean;
 }
 
 /**
@@ -56,6 +58,8 @@ export interface SubtitlePanelProps {
   onSelectAll: () => void;
   /** Callback to clear all selections */
   onClearSelection: () => void;
+  /** Whether hide letters mode is enabled */
+  hideLettersEnabled?: boolean;
 }
 
 /**
@@ -80,6 +84,8 @@ export interface SubtitleLineProps {
   onClick: (subtitle: Subtitle) => void;
   /** Callback when checkbox is toggled */
   onSelectionChange: (selected: boolean) => void;
+  /** Whether hide letters mode is enabled */
+  hideLettersEnabled?: boolean;
 }
 
 /**

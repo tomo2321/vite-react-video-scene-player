@@ -25,6 +25,11 @@ function App() {
   });
   const [resetSubtitlePositionTrigger, setResetSubtitlePositionTrigger] = useState(0);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [hideLettersEnabled, setHideLettersEnabled] = useState(() => {
+    // Load saved setting from localStorage or use default
+    const saved = localStorage.getItem('hideLettersEnabled');
+    return saved ? JSON.parse(saved) : false;
+  });
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -128,6 +133,12 @@ function App() {
 
   const handleResetSubtitlePosition = () => {
     setResetSubtitlePositionTrigger((prev) => prev + 1);
+  };
+
+  const toggleHideLetters = () => {
+    const newValue = !hideLettersEnabled;
+    setHideLettersEnabled(newValue);
+    localStorage.setItem('hideLettersEnabled', JSON.stringify(newValue));
   };
 
   const handleSubtitleSelectionChange = (subtitleIndex: number, selected: boolean) => {
@@ -274,6 +285,21 @@ function App() {
                 </button>
                 <span className="position-hint">Drag subtitles on video to reposition</span>
               </div>
+
+              <div className="hide-letters-control">
+                <div className="control-label">Hide Letters Mode</div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={hideLettersEnabled}
+                    onChange={toggleHideLetters}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+                <span className="toggle-hint">
+                  Convert letters to underscores (keeps first letter and punctuation)
+                </span>
+              </div>
             </div>
           </div>
         </>
@@ -299,6 +325,7 @@ function App() {
             autoPauseEnabled={autoPauseEnabled}
             subtitleFontSize={subtitleFontSize}
             resetPositionTrigger={resetSubtitlePositionTrigger}
+            hideLettersEnabled={hideLettersEnabled}
           />
         </div>
 
@@ -332,6 +359,7 @@ function App() {
             onPreviewSelected={handlePreviewSelected}
             onSelectAll={handleSelectAll}
             onClearSelection={handleClearSelection}
+            hideLettersEnabled={hideLettersEnabled}
           />
         </div>
       </main>
