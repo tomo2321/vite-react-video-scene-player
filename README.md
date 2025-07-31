@@ -13,7 +13,8 @@ A React-based web application for interactive video playback with synchronized s
 - 🎬 **Subtitle Overlay**: Display subtitles overlaid on the video player with adjustable size
 - 🖱️ **Draggable Subtitles**: Click and drag subtitles on the video to reposition them
 - ⚙️ **Settings Panel**: Customize subtitle appearance with easy-to-use controls
-- 📱 **Responsive Design**: Works on desktop and mobile devices
+- � **Hide Letters Mode**: Convert letters to underscores for language learning (keeps first letter and punctuation)
+- �📱 **Responsive Design**: Works on desktop and mobile devices
 - ⚡ **Real-time Sync**: Automatic highlighting of current subtitle based on video time
 - 💾 **Persistent Settings**: User preferences saved automatically across sessions
 
@@ -67,6 +68,7 @@ A React-based web application for interactive video playback with synchronized s
 4. **Settings** (Optional): Click the "⚙️" settings button to:
    - Adjust subtitle text size (0.8rem to 2.5rem)
    - Reset subtitle position to default
+   - Toggle "Hide Letters Mode" for language learning practice
    - Preferences are automatically saved
 
 #### Interactive Playback
@@ -88,6 +90,18 @@ A React-based web application for interactive video playback with synchronized s
 3. **Preview Selection**: Click the "Preview" button to view selected subtitles in a modal
 4. **Export Selection**: Click the "Download" button to export selected subtitles as a JSON file
 5. **Visual Feedback**: Selected subtitles are highlighted in yellow for easy identification
+
+#### Hide Letters Mode for Language Learning
+
+The Hide Letters Mode is perfect for language learning and comprehension practice:
+
+1. **Enable the Feature**: In settings, toggle "Hide Letters Mode" on
+2. **Text Conversion**: Letters are converted to bullet points (•) while preserving:
+   - First letter of each word
+   - All punctuation marks (periods, commas, semicolons, etc.)
+   - Word spacing and structure
+3. **Example**: "He is a soccer player." becomes "H• i• a s••••• p•••••."
+4. **Usage**: Try to guess the hidden words while listening to audio, then toggle off to check your answers
 
 ### Supported Formats
 
@@ -116,6 +130,8 @@ src/
 │   ├── PreviewModal.tsx      # Modal for previewing selected subtitles
 │   ├── ResizableSplitter.tsx # Resizable panel splitter
 │   └── FileUploader.tsx      # File upload interface with enhanced parsing
+├── utils/
+│   └── textUtils.ts          # Text processing utilities (hide letters mode)
 ├── types.ts                  # TypeScript type definitions
 ├── App.tsx                  # Main application component
 └── main.tsx                 # Application entry point
@@ -157,12 +173,14 @@ The application is designed to be extensible. Recent implementations and future 
 - **JSON export** - Download selected subtitles as JSON
 - **Bulk actions** - Select All and Clear All functionality
 - **Visual feedback** - Yellow highlighting for selected subtitles
+- **Hide Letters Mode** - Convert letters to bullet points for language learning practice
 
 #### 🚀 Future Enhancement Ideas
 
 - Support for additional subtitle formats (ASS, SUB)
 - Video playback speed controls
 - Subtitle text search functionality
+- Multiple difficulty levels for Hide Letters Mode (hide more/fewer letters)
 - Keyboard shortcuts for navigation
 - Loop mode for current subtitle
 - Export functionality for edited subtitles (SRT/VTT)
@@ -185,6 +203,28 @@ interface Subtitle {
   selected?: boolean; // Selection state for export/preview
 }
 ```
+
+### Text Utilities
+
+#### convertLettersToUnderscores(text: string): string
+
+Converts letters to bullet points while preserving word structure and punctuation for language learning.
+
+**Example:**
+
+```typescript
+import { convertLettersToUnderscores } from "./utils/textUtils";
+
+convertLettersToUnderscores("He is a soccer player.");
+// Returns: "H• i• a s••••• p•••••."
+```
+
+**Features:**
+
+- Preserves first letter of each word
+- Maintains all punctuation marks
+- Keeps word boundaries and spacing
+- Perfect for language learning exercises
 
 ### Export Format
 
