@@ -30,6 +30,11 @@ function App() {
     const saved = localStorage.getItem('hideLettersEnabled');
     return saved ? JSON.parse(saved) : false;
   });
+  const [textTypingEnabled, setTextTypingEnabled] = useState(() => {
+    // Load saved setting from localStorage or use default
+    const saved = localStorage.getItem('textTypingEnabled');
+    return saved ? JSON.parse(saved) : false;
+  });
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -139,6 +144,34 @@ function App() {
     const newValue = !hideLettersEnabled;
     setHideLettersEnabled(newValue);
     localStorage.setItem('hideLettersEnabled', JSON.stringify(newValue));
+  };
+
+  const toggleTextTyping = () => {
+    const newValue = !textTypingEnabled;
+    setTextTypingEnabled(newValue);
+    localStorage.setItem('textTypingEnabled', JSON.stringify(newValue));
+
+    // When enabling text typing mode, automatically enable hide letters and auto-pause
+    if (newValue) {
+      setHideLettersEnabled(true);
+      setAutoPauseEnabled(true);
+      localStorage.setItem('hideLettersEnabled', JSON.stringify(true));
+      // Reset all typed text when enabling
+      setSubtitles((prevSubtitles) =>
+        prevSubtitles.map((subtitle) => ({ ...subtitle, typedText: '' }))
+      );
+    }
+
+    // Reset paused subtitle tracking when toggling
+    setLastPausedSubtitleIndex(null);
+  };
+
+  const handleTextTyped = (subtitleIndex: number, typedText: string) => {
+    setSubtitles((prevSubtitles) =>
+      prevSubtitles.map((subtitle, index) =>
+        index === subtitleIndex ? { ...subtitle, typedText } : subtitle
+      )
+    );
   };
 
   const handleSubtitleSelectionChange = (subtitleIndex: number, selected: boolean) => {
@@ -293,11 +326,24 @@ function App() {
                     type="checkbox"
                     checked={hideLettersEnabled}
                     onChange={toggleHideLetters}
+                    disabled={textTypingEnabled} // Disable when text typing is enabled
                   />
                   <span className="toggle-slider"></span>
                 </label>
                 <span className="toggle-hint">
                   Convert letters to underscores (keeps first letter and punctuation)
+                </span>
+              </div>
+
+              <div className="text-typing-control">
+                <div className="control-label">Text Typing Mode</div>
+                <label className="toggle-switch">
+                  <input type="checkbox" checked={textTypingEnabled} onChange={toggleTextTyping} />
+                  <span className="toggle-slider"></span>
+                </label>
+                <span className="toggle-hint">
+                  Practice typing by revealing letters as you type correctly (enables hide letters &
+                  auto-pause)
                 </span>
               </div>
             </div>
@@ -326,6 +372,8 @@ function App() {
             subtitleFontSize={subtitleFontSize}
             resetPositionTrigger={resetSubtitlePositionTrigger}
             hideLettersEnabled={hideLettersEnabled}
+            textTypingEnabled={textTypingEnabled}
+            onTextTyped={handleTextTyped}
           />
         </div>
 
@@ -360,6 +408,7 @@ function App() {
             onSelectAll={handleSelectAll}
             onClearSelection={handleClearSelection}
             hideLettersEnabled={hideLettersEnabled}
+            textTypingEnabled={textTypingEnabled}
           />
         </div>
       </main>

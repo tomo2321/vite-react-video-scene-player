@@ -244,6 +244,14 @@
   margin-bottom: 20px;
 }
 
+.text-typing-control {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
 /* Toggle Switch Styles */
 .toggle-switch {
   position: relative;
@@ -291,6 +299,15 @@ input:checked + .toggle-slider {
 input:checked + .toggle-slider:before {
   transform: translateX(26px);
   background-color: white;
+}
+
+input:disabled + .toggle-slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input:disabled + .toggle-slider:before {
+  cursor: not-allowed;
 }
 
 .toggle-slider:hover {

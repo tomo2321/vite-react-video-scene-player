@@ -12,6 +12,8 @@ export interface Subtitle {
   index?: number;
   /** Whether this subtitle is selected */
   selected?: boolean;
+  /** Typed characters for text typing mode */
+  typedText?: string;
 }
 
 /**
@@ -36,6 +38,10 @@ export interface VideoPlayerProps {
   resetPositionTrigger?: number;
   /** Whether hide letters mode is enabled */
   hideLettersEnabled?: boolean;
+  /** Whether text typing mode is enabled */
+  textTypingEnabled?: boolean;
+  /** Callback when correct letters are typed in typing mode */
+  onTextTyped?: (subtitleIndex: number, typedText: string) => void;
 }
 
 /**
@@ -60,6 +66,8 @@ export interface SubtitlePanelProps {
   onClearSelection: () => void;
   /** Whether hide letters mode is enabled */
   hideLettersEnabled?: boolean;
+  /** Whether text typing mode is enabled */
+  textTypingEnabled?: boolean;
 }
 
 /**
@@ -86,6 +94,8 @@ export interface SubtitleLineProps {
   onSelectionChange: (selected: boolean) => void;
   /** Whether hide letters mode is enabled */
   hideLettersEnabled?: boolean;
+  /** Whether text typing mode is enabled */
+  textTypingEnabled?: boolean;
 }
 
 /**

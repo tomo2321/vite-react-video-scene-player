@@ -13,8 +13,9 @@ A React-based web application for interactive video playback with synchronized s
 - 🎬 **Subtitle Overlay**: Display subtitles overlaid on the video player with adjustable size
 - 🖱️ **Draggable Subtitles**: Click and drag subtitles on the video to reposition them
 - ⚙️ **Settings Panel**: Customize subtitle appearance with easy-to-use controls
-- � **Hide Letters Mode**: Convert letters to underscores for language learning (keeps first letter and punctuation)
-- �📱 **Responsive Design**: Works on desktop and mobile devices
+- 🔤 **Hide Letters Mode**: Convert letters to underscores for language learning (preserves first letter, punctuation, and [bracketed] content)
+- ⌨️ **Text Typing Mode**: Interactive typing practice with letter-by-letter reveal as you type correctly
+- 📱 **Responsive Design**: Works on desktop and mobile devices
 - ⚡ **Real-time Sync**: Automatic highlighting of current subtitle based on video time
 - 💾 **Persistent Settings**: User preferences saved automatically across sessions
 
@@ -100,8 +101,47 @@ The Hide Letters Mode is perfect for language learning and comprehension practic
    - First letter of each word
    - All punctuation marks (periods, commas, semicolons, etc.)
    - Word spacing and structure
-3. **Example**: "He is a soccer player." becomes "H• i• a s••••• p•••••."
+   - **Text between square brackets** [like speaker names or sound effects]
+3. **Examples**:
+   - "He is a soccer player." becomes "H• i• a s••••• p•••••."
+   - "[Music] She loves dancing." becomes "[Music] S•• l•••• d••••••."
 4. **Usage**: Try to guess the hidden words while listening to audio, then toggle off to check your answers
+
+#### Text Typing Mode for Interactive Learning
+
+The Text Typing Mode provides an interactive typing practice experience:
+
+1. **Enable the Feature**: In settings, toggle "Text Typing Mode" on
+   - This automatically enables Hide Letters Mode and Auto-Pause for optimal learning
+2. **How It Works**:
+   - Letters are hidden with bullet points (•), showing only first letters of words
+   - **Text between square brackets [like this] is preserved unchanged**
+   - As you type the correct letters on your keyboard, they are revealed in real-time
+   - The video pauses at the end of each subtitle, giving you time to practice
+3. **Visual Feedback**:
+   - A blue indicator shows "Text Typing Mode Active" with progress
+   - Progress counter shows how many letters you've typed vs. total letters
+4. **Usage Tips**:
+   - Focus on the video player area for keyboard input to work
+   - Only letters and numbers are recognized for typing
+   - Type at your own pace - there's no time limit
+   - Use this mode to improve spelling, vocabulary, and listening comprehension
+
+**Note**: When Text Typing Mode is enabled, the regular Hide Letters Mode toggle is disabled since typing mode manages letter visibility automatically.
+
+#### Keyboard Shortcuts
+
+While in Text Typing Mode:
+
+- **Letter keys (A-Z, 0-9)**: Type characters to reveal letters
+- **Escape**: Close settings panel if open
+- **Click on video**: Focus the video player area for keyboard input
+
+General navigation:
+
+- **Enter or Space**: Activate focused subtitle line
+- **Tab**: Navigate between interactive elements
+- **Escape**: Close modals and settings panels
 
 ### Supported Formats
 
@@ -174,6 +214,8 @@ The application is designed to be extensible. Recent implementations and future 
 - **Bulk actions** - Select All and Clear All functionality
 - **Visual feedback** - Yellow highlighting for selected subtitles
 - **Hide Letters Mode** - Convert letters to bullet points for language learning practice
+- **Text Typing Mode** - Interactive typing practice with real-time letter revelation
+- **Bracket preservation** - Text between [brackets] remains unchanged in language learning modes
 
 #### 🚀 Future Enhancement Ideas
 
@@ -189,6 +231,9 @@ The application is designed to be extensible. Recent implementations and future 
 - Multiple subtitle track support
 - Cloud storage integration
 - Collaborative subtitle editing
+- Word-by-word reveal mode for text typing
+- Typing speed metrics and progress tracking
+- Custom bracket notation support (e.g., parentheses, curly braces)
 
 ## API Reference
 
@@ -201,6 +246,7 @@ interface Subtitle {
   text: string; // Subtitle text content
   index?: number; // Original subtitle index from file
   selected?: boolean; // Selection state for export/preview
+  typedText?: string; // Typed characters for text typing mode
 }
 ```
 
@@ -208,7 +254,7 @@ interface Subtitle {
 
 #### convertLettersToUnderscores(text: string): string
 
-Converts letters to bullet points while preserving word structure and punctuation for language learning.
+Converts letters to bullet points while preserving word structure, punctuation, and text between square brackets for language learning.
 
 **Example:**
 
@@ -217,6 +263,9 @@ import { convertLettersToUnderscores } from "./utils/textUtils";
 
 convertLettersToUnderscores("He is a soccer player.");
 // Returns: "H• i• a s••••• p•••••."
+
+convertLettersToUnderscores("[Music] She loves dancing.");
+// Returns: "[Music] S•• l•••• d••••••."
 ```
 
 **Features:**
@@ -224,7 +273,40 @@ convertLettersToUnderscores("He is a soccer player.");
 - Preserves first letter of each word
 - Maintains all punctuation marks
 - Keeps word boundaries and spacing
+- **Preserves text between square brackets unchanged**
 - Perfect for language learning exercises
+
+#### extractLettersOnly(text: string): string
+
+Extracts only the letters (no spaces or punctuation) from text for typing comparison. Text between square brackets is excluded.
+
+**Example:**
+
+```typescript
+import { extractLettersOnly } from "./utils/textUtils";
+
+extractLettersOnly("Hello world!");
+// Returns: "helloworld"
+
+extractLettersOnly("[Music] Hello world!");
+// Returns: "helloworld" (brackets content excluded)
+```
+
+#### revealTypedCharacters(originalText: string, typedText: string, fullOriginalText?: string): string
+
+Reveals typed characters in text while hiding untyped letters. Used for text typing mode.
+
+**Example:**
+
+```typescript
+import { revealTypedCharacters } from "./utils/textUtils";
+
+revealTypedCharacters("Hello world!", "hell");
+// Returns: "Hell• w••••!"
+
+revealTypedCharacters("[Music] Hello world!", "hell");
+// Returns: "[Music] Hell• w••••!" (brackets preserved)
+```
 
 ### Export Format
 
@@ -248,6 +330,39 @@ Selected subtitles are exported as JSON with the following structure:
 - Firefox 85+
 - Safari 14+
 - Edge 88+
+
+## Troubleshooting
+
+### Common Issues
+
+**Text Typing Mode not responding to keyboard input:**
+
+- Ensure the video player area has focus by clicking on it
+- Check that Text Typing Mode is enabled in settings
+- Verify that your browser supports keyboard events
+
+**Subtitles not displaying properly:**
+
+- Check that the subtitle file format is SRT or VTT
+- Ensure subtitle timing matches video duration
+- Verify subtitle file encoding is UTF-8
+
+**Video not loading:**
+
+- Confirm video format is supported (MP4, WebM, AVI, MOV)
+- Check that the video file is not corrupted
+- Try a different video file to isolate the issue
+
+**Bracket preservation not working:**
+
+- Ensure brackets are properly closed: `[text]` not `[text`
+- Check that there are no nested brackets within the same line
+
+### Performance Tips
+
+- For large subtitle files (1000+ entries), consider splitting into smaller files
+- Use modern video formats (MP4 H.264) for better browser compatibility
+- Close other browser tabs when working with large video files
 
 ## Accessibility
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { SubtitleLineProps } from '../types';
-import { convertLettersToUnderscores } from '../utils/textUtils';
+import { convertLettersToUnderscores, revealTypedCharacters } from '../utils/textUtils';
 import './SubtitleLine.css';
 
 const SubtitleLine: React.FC<SubtitleLineProps> = ({
@@ -9,6 +9,7 @@ const SubtitleLine: React.FC<SubtitleLineProps> = ({
   onClick,
   onSelectionChange,
   hideLettersEnabled = false,
+  textTypingEnabled = false,
 }) => {
   const lineRef = useRef<HTMLDivElement>(null);
 
@@ -68,7 +69,20 @@ const SubtitleLine: React.FC<SubtitleLineProps> = ({
       </div>
       <div className="subtitle-text">
         {subtitle.text.split('\n').map((line, idx) => {
-          const displayText = hideLettersEnabled ? convertLettersToUnderscores(line) : line;
+          let displayText: string;
+
+          if (textTypingEnabled) {
+            // In text typing mode, reveal typed characters with full context
+            const typedText = subtitle.typedText || '';
+            displayText = revealTypedCharacters(line, typedText, subtitle.text);
+          } else if (hideLettersEnabled) {
+            // Regular hide letters mode
+            displayText = convertLettersToUnderscores(line);
+          } else {
+            // Normal display
+            displayText = line;
+          }
+
           return <div key={`line-${idx}-${line.substring(0, 10)}`}>{displayText}</div>;
         })}
       </div>

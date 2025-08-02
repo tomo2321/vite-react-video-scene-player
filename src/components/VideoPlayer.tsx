@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Subtitle, VideoPlayerProps } from '../types';
-import { convertLettersToUnderscores } from '../utils/textUtils';
+import {
+  convertLettersToUnderscores,
+  extractLettersOnly,
+  revealTypedCharacters,
+} from '../utils/textUtils';
 import './VideoPlayer.css';
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -13,6 +17,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   subtitleFontSize,
   resetPositionTrigger,
   hideLettersEnabled = false,
+  textTypingEnabled = false,
+  onTextTyped,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoUrl, setVideoUrl] = useState<string>('');
@@ -24,6 +30,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState<number>(-1);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -45,36 +52,78 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   useEffect(() => {
     // Find current subtitle based on video time with millisecond precision
     const timeInMs = Math.round(currentTime * 1000);
+    let displaySubtitle: Subtitle | null = null;
+    let subtitleIndex = -1;
 
     if (autoPauseEnabled) {
       // When auto-pause is enabled, extend subtitle display until next subtitle starts
-      let displaySubtitle = subtitles.find((sub) => timeInMs >= sub.start && timeInMs <= sub.end);
+      const foundIndex = subtitles.findIndex((sub) => timeInMs >= sub.start && timeInMs <= sub.end);
 
-      // If no current subtitle, check if we should display the last one until next one starts
-      if (!displaySubtitle) {
-        // Find the last subtitle that ended
-        const lastEndedSubtitle = subtitles
-          .filter((sub) => timeInMs > sub.end)
-          .sort((a, b) => b.end - a.end)[0];
+      if (foundIndex !== -1) {
+        displaySubtitle = subtitles[foundIndex];
+        subtitleIndex = foundIndex;
+      } else {
+        // If no current subtitle, check if we should display the last one until next one starts
+        const lastEndedIndex = subtitles
+          .map((sub, index) => ({ sub, index }))
+          .filter(({ sub }) => timeInMs > sub.end)
+          .sort((a, b) => b.sub.end - a.sub.end)[0];
 
-        if (lastEndedSubtitle) {
+        if (lastEndedIndex) {
           // Check if there's a next subtitle coming up
           const nextSubtitle = subtitles.find((sub) => timeInMs < sub.start);
 
           // Display the last subtitle if there's no next subtitle yet, or if we're still before the next one
           if (!nextSubtitle || timeInMs < nextSubtitle.start) {
-            displaySubtitle = lastEndedSubtitle;
+            displaySubtitle = lastEndedIndex.sub;
+            subtitleIndex = lastEndedIndex.index;
           }
         }
       }
-
-      setCurrentSubtitle(displaySubtitle || null);
     } else {
       // Normal behavior when auto-pause is disabled
-      const subtitle = subtitles.find((sub) => timeInMs >= sub.start && timeInMs <= sub.end);
-      setCurrentSubtitle(subtitle || null);
+      const foundIndex = subtitles.findIndex((sub) => timeInMs >= sub.start && timeInMs <= sub.end);
+      if (foundIndex !== -1) {
+        displaySubtitle = subtitles[foundIndex];
+        subtitleIndex = foundIndex;
+      }
     }
+
+    setCurrentSubtitle(displaySubtitle);
+    setCurrentSubtitleIndex(subtitleIndex);
   }, [currentTime, subtitles, autoPauseEnabled]);
+
+  // Keyboard event handler for text typing mode
+  useEffect(() => {
+    if (!textTypingEnabled || currentSubtitleIndex === -1) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only handle letter and number keys
+      if (!/^[a-zA-Z0-9]$/.test(event.key)) return;
+
+      // Prevent default to avoid any browser shortcuts
+      event.preventDefault();
+
+      const currentSub = subtitles[currentSubtitleIndex];
+      if (!currentSub) return;
+
+      const currentTypedText = currentSub.typedText || '';
+      const targetText = extractLettersOnly(currentSub.text);
+
+      // Check if the typed key matches the next expected character
+      if (
+        currentTypedText.length < targetText.length &&
+        event.key.toLowerCase() === targetText[currentTypedText.length]
+      ) {
+        const newTypedText = currentTypedText + event.key.toLowerCase();
+        onTextTyped?.(currentSubtitleIndex, newTypedText);
+      }
+    };
+
+    // Add event listener to document so it works globally when video player is focused
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [textTypingEnabled, currentSubtitleIndex, subtitles, onTextTyped]);
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.target as HTMLVideoElement;
@@ -158,30 +207,54 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             className="video-element"
           />
           {currentSubtitle && (
-            <div
-              className="subtitle-overlay"
-              style={{
-                fontSize: `${subtitleFontSize}rem`,
-                left: `${subtitlePosition.x}%`,
-                top: `${subtitlePosition.y}%`,
-                bottom: 'auto',
-                transform: 'translate(-50%, -50%)',
-                cursor: isDragging ? 'grabbing' : 'grab',
-                userSelect: 'none',
-              }}
-              onMouseDown={handleSubtitleMouseDown}
-              title="Drag to reposition subtitles"
-              role="button"
-              tabIndex={0}
-              aria-label="Draggable subtitle text"
-            >
-              {currentSubtitle.text.split('\n').map((line, idx) => {
-                const displayText = hideLettersEnabled ? convertLettersToUnderscores(line) : line;
-                return (
-                  <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>{displayText}</div>
-                );
-              })}
-            </div>
+            <>
+              {textTypingEnabled && (
+                <div className="typing-indicator">
+                  <span>🔤 Text Typing Mode Active - Type to reveal letters!</span>
+                  <span className="typing-progress">
+                    Progress: {currentSubtitle.typedText?.length || 0} /{' '}
+                    {extractLettersOnly(currentSubtitle.text).length}
+                  </span>
+                </div>
+              )}
+              <div
+                className="subtitle-overlay"
+                style={{
+                  fontSize: `${subtitleFontSize}rem`,
+                  left: `${subtitlePosition.x}%`,
+                  top: `${subtitlePosition.y}%`,
+                  bottom: 'auto',
+                  transform: 'translate(-50%, -50%)',
+                  cursor: isDragging ? 'grabbing' : 'grab',
+                  userSelect: 'none',
+                }}
+                onMouseDown={handleSubtitleMouseDown}
+                title="Drag to reposition subtitles"
+                role="button"
+                tabIndex={0}
+                aria-label="Draggable subtitle text"
+              >
+                {currentSubtitle.text.split('\n').map((line, idx) => {
+                  let displayText: string;
+
+                  if (textTypingEnabled && currentSubtitleIndex !== -1) {
+                    // In text typing mode, reveal typed characters with full context
+                    const typedText = currentSubtitle.typedText || '';
+                    displayText = revealTypedCharacters(line, typedText, currentSubtitle.text);
+                  } else if (hideLettersEnabled) {
+                    // Regular hide letters mode
+                    displayText = convertLettersToUnderscores(line);
+                  } else {
+                    // Normal display
+                    displayText = line;
+                  }
+
+                  return (
+                    <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>{displayText}</div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
       ) : (
