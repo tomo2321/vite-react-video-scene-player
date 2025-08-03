@@ -14,7 +14,17 @@ function App() {
   const [videoRef, setVideoRef] = useState<HTMLVideoElement | null>(null);
   const [leftPanelWidth, setLeftPanelWidth] = useState(70); // percentage
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [autoPauseEnabled, setAutoPauseEnabled] = useState(false);
+  const [autoPauseEnabled, setAutoPauseEnabled] = useState(() => {
+    // Auto-enable if text typing mode is already enabled from localStorage
+    const textTypingSaved = localStorage.getItem('textTypingEnabled');
+    const isTextTypingEnabled = textTypingSaved ? JSON.parse(textTypingSaved) : false;
+
+    // Load saved auto-pause setting, but override to true if text typing is enabled
+    const autoPauseSaved = localStorage.getItem('autoPauseEnabled');
+    const savedAutoPause = autoPauseSaved ? JSON.parse(autoPauseSaved) : false;
+
+    return isTextTypingEnabled || savedAutoPause;
+  });
   const [manualSeekInProgress, setManualSeekInProgress] = useState(false);
   const [lastPausedSubtitleIndex, setLastPausedSubtitleIndex] = useState<number | null>(null);
   const [showSettings, setShowSettings] = useState(false);
@@ -26,9 +36,15 @@ function App() {
   const [resetSubtitlePositionTrigger, setResetSubtitlePositionTrigger] = useState(0);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [hideLettersEnabled, setHideLettersEnabled] = useState(() => {
-    // Load saved setting from localStorage or use default
-    const saved = localStorage.getItem('hideLettersEnabled');
-    return saved ? JSON.parse(saved) : false;
+    // Auto-enable if text typing mode is already enabled from localStorage
+    const textTypingSaved = localStorage.getItem('textTypingEnabled');
+    const isTextTypingEnabled = textTypingSaved ? JSON.parse(textTypingSaved) : false;
+
+    // Load saved hide letters setting, but override to true if text typing is enabled
+    const hideLettersSaved = localStorage.getItem('hideLettersEnabled');
+    const savedHideLetters = hideLettersSaved ? JSON.parse(hideLettersSaved) : false;
+
+    return isTextTypingEnabled || savedHideLetters;
   });
   const [textTypingEnabled, setTextTypingEnabled] = useState(() => {
     // Load saved setting from localStorage or use default
@@ -146,7 +162,18 @@ function App() {
   };
 
   const toggleAutoPause = () => {
-    setAutoPauseEnabled(!autoPauseEnabled);
+    const newValue = !autoPauseEnabled;
+
+    // If trying to disable auto-pause while text typing mode is enabled, warn user
+    if (!newValue && textTypingEnabled) {
+      alert(
+        'Auto-Pause cannot be disabled while Text Typing Mode is active. Please disable Text Typing Mode first.'
+      );
+      return;
+    }
+
+    setAutoPauseEnabled(newValue);
+    localStorage.setItem('autoPauseEnabled', JSON.stringify(newValue));
     // Reset paused subtitle tracking when toggling auto-pause
     setLastPausedSubtitleIndex(null);
   };
@@ -176,6 +203,7 @@ function App() {
       setHideLettersEnabled(true);
       setAutoPauseEnabled(true);
       localStorage.setItem('hideLettersEnabled', JSON.stringify(true));
+      localStorage.setItem('autoPauseEnabled', JSON.stringify(true));
     }
 
     // Reset all typed text and typing mistakes when toggling
@@ -296,18 +324,6 @@ function App() {
           <FileUploader onVideoLoad={handleVideoLoad} onSubtitlesLoad={handleSubtitlesLoad} />
           <button
             type="button"
-            onClick={toggleAutoPause}
-            className={`auto-pause-toggle ${autoPauseEnabled ? 'active' : ''}`}
-            title={
-              autoPauseEnabled
-                ? 'Disable auto-pause on subtitle change'
-                : 'Enable auto-pause on subtitle change'
-            }
-          >
-            ⏸️ Auto-pause: {autoPauseEnabled ? 'ON' : 'OFF'}
-          </button>
-          <button
-            type="button"
             onClick={() => setShowSettings(!showSettings)}
             className="settings-button"
             title="Video Settings"
@@ -364,6 +380,23 @@ function App() {
                   Reset Position
                 </button>
                 <span className="position-hint">Drag subtitles on video to reposition</span>
+              </div>
+
+              <div className="auto-pause-control">
+                <div className="control-label">Auto-Pause Mode</div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={autoPauseEnabled}
+                    onChange={toggleAutoPause}
+                    disabled={textTypingEnabled} // Disable when text typing is enabled
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+                <div className="toggle-hint">
+                  Automatically pause video at the end of each subtitle
+                  {textTypingEnabled && ' (Required for Text Typing Mode)'}
+                </div>
               </div>
 
               <div className="hide-letters-control">

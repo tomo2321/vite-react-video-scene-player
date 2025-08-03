@@ -77,10 +77,10 @@ A React-based web application for interactive video playback with synchronized s
 
 1. **Load a Video**: Click the "📹 Load Video" button to select a local video file (MP4, WebM, AVI, etc.)
 2. **Load Subtitle**: Click the "📝 Load Subtitle" button to select an SRT or VTT subtitle file
-3. **Auto-Pause Mode** (Optional): Toggle the "⏸️ Auto-pause" button to enable/disable automatic pausing at subtitle end times
-4. **Settings Panel** (Optional): Click the "⚙️" settings button to access:
+3. **Settings Panel**: Click the "⚙️" settings button to access:
    - **Subtitle Size**: Adjust text size (0.8rem to 2.5rem)
    - **Position Reset**: Reset subtitle position to default center-bottom
+   - **Auto-Pause Mode**: Toggle automatic pausing at subtitle end times
    - **Hide Letters Mode**: Toggle for language learning practice
    - **Text Typing Mode**: Toggle for interactive typing practice
    - **Keyboard Shortcuts**: View current navigation shortcuts (Ctrl+R, Ctrl+B, Ctrl+N by default)
@@ -141,6 +141,7 @@ The Text Typing Mode provides an interactive typing practice experience with enh
 
 1. **Enable the Feature**: In settings, toggle "Text Typing Mode" on
    - This automatically enables Hide Letters Mode and Auto-Pause for optimal learning
+   - Auto-Pause cannot be disabled while Text Typing Mode is active (required for proper functionality)
 2. **How It Works**:
    - Letters are hidden with bullet points (•), showing only first letters of words
    - **Text between square brackets [like this] is preserved unchanged**
@@ -510,6 +511,14 @@ Selected subtitles are exported as JSON with the following structure:
 - Make sure you're typing letters/numbers (special characters are ignored)
 - Check that the subtitle contains typeable content (not just punctuation or brackets)
 - Verify that you're typing the correct next letter in sequence
+
+**Auto-Pause toggle disabled or showing "Required":**
+
+- Auto-Pause is automatically enabled when Text Typing Mode is active
+- Auto-Pause cannot be manually disabled while Text Typing Mode is enabled
+- To disable Auto-Pause, first disable Text Typing Mode in settings
+- Auto-Pause control is located in the settings panel (⚙️ button)
+- This is by design to ensure optimal learning experience with typing practice
 
 **Navigation shortcuts not replaying/advancing properly:**
 
