@@ -186,3 +186,88 @@ export function extractLettersOnly(text: string): string {
 
   return result;
 }
+
+/**
+ * Reveals typed characters and emphasizes the next target letter in text typing mode
+ * Text between square brackets [like this] is preserved unchanged
+ * Returns an array of text segments with emphasis information
+ *
+ * @param originalText - The original text (can be a single line from multi-line text)
+ * @param typedText - The text that has been correctly typed so far (entire typed sequence)
+ * @param fullOriginalText - The full original text to calculate position correctly
+ * @returns Array of text segments with emphasis information
+ */
+export function revealTypedCharactersWithEmphasis(
+  originalText: string,
+  typedText: string = '',
+  fullOriginalText?: string
+): Array<{ text: string; isTarget: boolean }> {
+  // Use fullOriginalText if provided, otherwise use originalText
+  const textToCheck = fullOriginalText || originalText;
+  const lettersOnlyOriginal = extractLettersOnly(textToCheck);
+
+  const result: Array<{ text: string; isTarget: boolean }> = [];
+  let letterIndex = 0;
+  let i = 0;
+  let insideBrackets = false;
+
+  // Find the starting letter index for this line if it's part of a larger text
+  if (fullOriginalText && originalText !== fullOriginalText) {
+    const textBeforeLine = fullOriginalText.substring(0, fullOriginalText.indexOf(originalText));
+    letterIndex = extractLettersOnly(textBeforeLine).length;
+  }
+
+  while (i < originalText.length) {
+    const char = originalText[i];
+
+    // Check for opening bracket
+    if (char === '[') {
+      insideBrackets = true;
+      result.push({ text: char, isTarget: false });
+      i++;
+      continue;
+    }
+
+    // Check for closing bracket
+    if (char === ']') {
+      insideBrackets = false;
+      result.push({ text: char, isTarget: false });
+      i++;
+      continue;
+    }
+
+    // If inside brackets, preserve everything
+    if (insideBrackets) {
+      result.push({ text: char, isTarget: false });
+      i++;
+      continue;
+    }
+
+    // Skip whitespace and punctuation - they don't count as letters to type
+    if (/\s/.test(char) || /[^\w]/.test(char)) {
+      result.push({ text: char, isTarget: false });
+      i++;
+      continue;
+    }
+
+    // Determine if this is the next target letter
+    const isNextTarget =
+      letterIndex === typedText.length && letterIndex < lettersOnlyOriginal.length;
+
+    // Check if this letter position has been typed correctly
+    if (letterIndex < typedText.length && letterIndex < lettersOnlyOriginal.length) {
+      result.push({ text: char, isTarget: false }); // Reveal the letter
+    } else {
+      // Hide untyped letters with bullet, but keep first letter of each word visible
+      const isFirstLetterOfWord =
+        i === 0 || /\s/.test(originalText[i - 1]) || originalText[i - 1] === ']';
+      const displayChar = isFirstLetterOfWord ? char : '•';
+      result.push({ text: displayChar, isTarget: isNextTarget });
+    }
+
+    letterIndex++;
+    i++;
+  }
+
+  return result;
+}

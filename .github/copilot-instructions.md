@@ -20,7 +20,11 @@ This is a React + TypeScript + Vite web application for interactive video playba
 ### Advanced Learning Features
 
 - **Hide Letters Mode**: Convert letters to bullet points (•) for language learning while preserving first letters, punctuation, and [bracketed] content
-- **Text Typing Mode**: Interactive typing practice where letters are revealed as users type correctly
+- **Text Typing Mode**: Interactive typing practice with enhanced visual feedback
+  - Target letter emphasis with pulsing yellow/amber highlight
+  - Red blinking feedback for typing mistakes
+  - Letter-by-letter revelation as users type correctly
+  - Automatic mistake detection and visual response
 - **Bracket Preservation**: Text between square brackets [like speaker names] is never hidden
 - **Subtitle Selection**: Checkbox-based selection system for export and preview
 - **Settings Panel**: Adjustable subtitle font size, position reset, and mode toggles
@@ -32,21 +36,7 @@ This is a React + TypeScript + Vite web application for interactive video playba
 - Mobile-responsive design
 - Preview modal for selected subtitles
 - JSON export functionality for selected subtitles
-- Visual feedback with highlighting and progress indicatorslayer - Copilot Instructions
-
-<!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
-
-## Project Overview
-
-This is a React + TypeScript + Vite web application for video playback with interactive subtitle functionality.
-
-## Key Features
-
-- Load local video files and SRT subtitle files
-- Display video scenes on the left and subtitle scripts on the right
-- Click subtitle lines to jump to matched video scenes with audio playback
-- Overlay subtitles on the video player
-- Synchronized video-subtitle interaction
+- Visual feedback with highlighting and progress indicators
 
 ## Architecture Guidelines
 
@@ -79,6 +69,7 @@ This is a React + TypeScript + Vite web application for video playback with inte
 - `utils/textUtils.ts`: Text processing functions for language learning modes
   - `convertLettersToUnderscores()`: Hide letters with bullet points
   - `revealTypedCharacters()`: Progressive letter revelation for typing mode
+  - `revealTypedCharactersWithEmphasis()`: Enhanced typing with target letter emphasis
   - `extractLettersOnly()`: Extract typeable characters (excluding bracketed content)
 
 ## Important State Management
@@ -107,6 +98,8 @@ This is a React + TypeScript + Vite web application for video playback with inte
 ### Selection State
 
 - `subtitles[].selected`: Individual subtitle selection for export
+- `subtitles[].typedText`: Typed characters for text typing mode progress
+- `subtitles[].hasTypingMistake`: Temporary state for typing mistake visual feedback
 - `isPreviewModalOpen`: Preview modal visibility
 
 ## Important Libraries & Dependencies
@@ -146,6 +139,11 @@ This is a React + TypeScript + Vite web application for video playback with inte
 - Interactive letter-by-letter revelation as users type
 - Only counts letters outside of [bracketed] content
 - Real-time progress tracking and visual feedback
+- **Enhanced Visual Features**:
+  - Target letter emphasis with pulsing animation (yellow/amber background)
+  - Red blinking feedback for typing mistakes (600ms duration)
+  - Smart detection of next typeable character
+  - Automatic mistake state management and cleanup
 - Automatic enabling of hide letters mode and auto-pause
 - Global keyboard event handling with proper cleanup
 

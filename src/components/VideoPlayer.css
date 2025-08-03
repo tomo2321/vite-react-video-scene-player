@@ -110,3 +110,64 @@
 .video-placeholder p {
   margin: 0;
 }
+
+/* Target letter emphasis in typing mode */
+.target-letter {
+  background-color: rgba(255, 193, 7, 0.8);
+  color: #000;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.6);
+  animation: pulse-target 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-target {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.6);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 12px rgba(255, 193, 7, 0.8);
+  }
+}
+
+/* Typing mistake blinking effect */
+.subtitle-overlay.typing-mistake {
+  animation: blink-red 0.6s ease-in-out;
+}
+
+@keyframes blink-red {
+  0%,
+  100% {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  25%,
+  75% {
+    background-color: rgba(220, 53, 69, 0.8);
+  }
+  50% {
+    background-color: rgba(220, 53, 69, 0.9);
+  }
+}
+
+/* Enhanced typing indicator with mistake feedback */
+.typing-indicator.mistake {
+  background-color: rgba(220, 53, 69, 0.9);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(-50%) translateX(0px);
+  }
+  25% {
+    transform: translateX(-50%) translateX(-5px);
+  }
+  75% {
+    transform: translateX(-50%) translateX(5px);
+  }
+}

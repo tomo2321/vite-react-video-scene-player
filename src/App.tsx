@@ -156,11 +156,16 @@ function App() {
       setHideLettersEnabled(true);
       setAutoPauseEnabled(true);
       localStorage.setItem('hideLettersEnabled', JSON.stringify(true));
-      // Reset all typed text when enabling
-      setSubtitles((prevSubtitles) =>
-        prevSubtitles.map((subtitle) => ({ ...subtitle, typedText: '' }))
-      );
     }
+
+    // Reset all typed text and typing mistakes when toggling
+    setSubtitles((prevSubtitles) =>
+      prevSubtitles.map((subtitle) => ({
+        ...subtitle,
+        typedText: '',
+        hasTypingMistake: false,
+      }))
+    );
 
     // Reset paused subtitle tracking when toggling
     setLastPausedSubtitleIndex(null);
@@ -172,6 +177,23 @@ function App() {
         index === subtitleIndex ? { ...subtitle, typedText } : subtitle
       )
     );
+  };
+
+  const handleTypingMistake = (subtitleIndex: number) => {
+    setSubtitles((prevSubtitles) =>
+      prevSubtitles.map((subtitle, index) =>
+        index === subtitleIndex ? { ...subtitle, hasTypingMistake: true } : subtitle
+      )
+    );
+
+    // Clear the mistake state after animation duration
+    setTimeout(() => {
+      setSubtitles((prevSubtitles) =>
+        prevSubtitles.map((subtitle, index) =>
+          index === subtitleIndex ? { ...subtitle, hasTypingMistake: false } : subtitle
+        )
+      );
+    }, 600); // Match the CSS animation duration
   };
 
   const handleSubtitleSelectionChange = (subtitleIndex: number, selected: boolean) => {
@@ -374,6 +396,7 @@ function App() {
             hideLettersEnabled={hideLettersEnabled}
             textTypingEnabled={textTypingEnabled}
             onTextTyped={handleTextTyped}
+            onTypingMistake={handleTypingMistake}
           />
         </div>
 

@@ -14,6 +14,8 @@ export interface Subtitle {
   selected?: boolean;
   /** Typed characters for text typing mode */
   typedText?: string;
+  /** Whether there was a recent typing mistake (for visual feedback) */
+  hasTypingMistake?: boolean;
 }
 
 /**
@@ -42,6 +44,8 @@ export interface VideoPlayerProps {
   textTypingEnabled?: boolean;
   /** Callback when correct letters are typed in typing mode */
   onTextTyped?: (subtitleIndex: number, typedText: string) => void;
+  /** Callback when a typing mistake occurs */
+  onTypingMistake?: (subtitleIndex: number) => void;
 }
 
 /**

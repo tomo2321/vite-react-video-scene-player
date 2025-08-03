@@ -1,6 +1,6 @@
 # Video Scene Player
 
-A React-based web application for interactive video playback with synchronized subtitle functionality. Load local video files and SRT or VTT subtitle files, then click on subtitle lines to jump to corresponding video scenes. Enhanced with subtitle selection, export, and preview capabilities.
+A React-based web application for interactive video playback with synchronized subtitle functionality. Load local video files and SRT or VTT subtitle files, then click on subtitle lines to jump to corresponding video scenes. Enhanced with subtitle selection, export, preview capabilities, and advanced language learning features including interactive text typing with visual feedback.
 
 ## Features
 
@@ -14,7 +14,7 @@ A React-based web application for interactive video playback with synchronized s
 - 🖱️ **Draggable Subtitles**: Click and drag subtitles on the video to reposition them
 - ⚙️ **Settings Panel**: Customize subtitle appearance with easy-to-use controls
 - 🔤 **Hide Letters Mode**: Convert letters to underscores for language learning (preserves first letter, punctuation, and [bracketed] content)
-- ⌨️ **Text Typing Mode**: Interactive typing practice with letter-by-letter reveal as you type correctly
+- ⌨️ **Text Typing Mode**: Interactive typing practice with enhanced visual feedback - target letter emphasis and mistake detection
 - 📱 **Responsive Design**: Works on desktop and mobile devices
 - ⚡ **Real-time Sync**: Automatic highlighting of current subtitle based on video time
 - 💾 **Persistent Settings**: User preferences saved automatically across sessions
@@ -109,7 +109,7 @@ The Hide Letters Mode is perfect for language learning and comprehension practic
 
 #### Text Typing Mode for Interactive Learning
 
-The Text Typing Mode provides an interactive typing practice experience:
+The Text Typing Mode provides an interactive typing practice experience with enhanced visual feedback:
 
 1. **Enable the Feature**: In settings, toggle "Text Typing Mode" on
    - This automatically enables Hide Letters Mode and Auto-Pause for optimal learning
@@ -118,7 +118,9 @@ The Text Typing Mode provides an interactive typing practice experience:
    - **Text between square brackets [like this] is preserved unchanged**
    - As you type the correct letters on your keyboard, they are revealed in real-time
    - The video pauses at the end of each subtitle, giving you time to practice
-3. **Visual Feedback**:
+3. **Enhanced Visual Feedback**:
+   - **Target Letter Emphasis**: The next letter you need to type is highlighted with a bright yellow/amber background and pulses with animation
+   - **Mistake Feedback**: When you type an incorrect letter, the subtitle background blinks red for 0.6 seconds
    - A blue indicator shows "Text Typing Mode Active" with progress
    - Progress counter shows how many letters you've typed vs. total letters
 4. **Usage Tips**:
@@ -126,6 +128,12 @@ The Text Typing Mode provides an interactive typing practice experience:
    - Only letters and numbers are recognized for typing
    - Type at your own pace - there's no time limit
    - Use this mode to improve spelling, vocabulary, and listening comprehension
+
+**Visual Design Features:**
+
+- **Target Letter**: Yellow/amber background (`rgba(255, 193, 7, 0.8)`) with pulsing animation that scales from 1x to 1.1x
+- **Typing Mistake**: Red blinking background (`rgba(220, 53, 69, 0.8)`) that transitions smoothly back to normal
+- **Smart Detection**: Only actual letters are emphasized (not spaces or punctuation)
 
 **Note**: When Text Typing Mode is enabled, the regular Hide Letters Mode toggle is disabled since typing mode manages letter visibility automatically.
 
@@ -156,7 +164,7 @@ General navigation:
 - **Vite** - Fast build tool and development server
 - **Biome** - Fast linter and formatter for JavaScript/TypeScript
 - **Custom Parsers** - Manual SRT and VTT subtitle parsing with index extraction
-- **CSS3** - Modern styling with animations and responsive design
+- **CSS3** - Modern styling with keyframe animations (target letter emphasis, mistake feedback) and responsive design
 - **localStorage** - Persistent user settings storage
 
 ## Project Structure
@@ -164,14 +172,14 @@ General navigation:
 ```
 src/
 ├── components/
-│   ├── VideoPlayer.tsx       # Video player with subtitle overlay
+│   ├── VideoPlayer.tsx       # Video player with subtitle overlay and enhanced typing feedback
 │   ├── SubtitlePanel.tsx     # Subtitle list panel with selection controls
 │   ├── SubtitleLine.tsx      # Individual subtitle entry with checkbox
 │   ├── PreviewModal.tsx      # Modal for previewing selected subtitles
 │   ├── ResizableSplitter.tsx # Resizable panel splitter
 │   └── FileUploader.tsx      # File upload interface with enhanced parsing
 ├── utils/
-│   └── textUtils.ts          # Text processing utilities (hide letters mode)
+│   └── textUtils.ts          # Text processing utilities (hide letters mode, typing emphasis)
 ├── types.ts                  # TypeScript type definitions
 ├── App.tsx                  # Main application component
 └── main.tsx                 # Application entry point
@@ -215,6 +223,7 @@ The application is designed to be extensible. Recent implementations and future 
 - **Visual feedback** - Yellow highlighting for selected subtitles
 - **Hide Letters Mode** - Convert letters to bullet points for language learning practice
 - **Text Typing Mode** - Interactive typing practice with real-time letter revelation
+- **Enhanced Text Typing Features** - Target letter emphasis with pulsing animation and red blinking feedback for typing mistakes
 - **Bracket preservation** - Text between [brackets] remains unchanged in language learning modes
 
 #### 🚀 Future Enhancement Ideas
@@ -247,6 +256,7 @@ interface Subtitle {
   index?: number; // Original subtitle index from file
   selected?: boolean; // Selection state for export/preview
   typedText?: string; // Typed characters for text typing mode
+  hasTypingMistake?: boolean; // Whether there was a recent typing mistake (for visual feedback)
 }
 ```
 
@@ -308,6 +318,72 @@ revealTypedCharacters("[Music] Hello world!", "hell");
 // Returns: "[Music] Hell• w••••!" (brackets preserved)
 ```
 
+#### revealTypedCharactersWithEmphasis(originalText: string, typedText: string, fullOriginalText?: string): Array<{ text: string; isTarget: boolean }>
+
+Enhanced version that returns text segments with emphasis information for target letter highlighting.
+
+**Example:**
+
+```typescript
+import { revealTypedCharactersWithEmphasis } from "./utils/textUtils";
+
+const segments = revealTypedCharactersWithEmphasis("Hello", "hel");
+// Returns: [
+//   { text: "H", isTarget: false },
+//   { text: "e", isTarget: false },
+//   { text: "l", isTarget: false },
+//   { text: "l", isTarget: true },  // Next target letter
+//   { text: "o", isTarget: false }
+// ]
+```
+
+### Enhanced Text Typing Mode Implementation
+
+The enhanced text typing mode includes sophisticated visual feedback:
+
+#### Target Letter Detection
+
+- **Function**: `revealTypedCharactersWithEmphasis()` returns text segments with emphasis information
+- **Detection Logic**: Compares current typed text length with expected letter position
+- **Visual Effect**: Target letters receive `.target-letter` CSS class with pulsing animation
+
+#### Mistake Detection and Feedback
+
+- **Detection**: Enhanced keyboard event handler compares typed key with expected character
+- **State Management**: Mistake state stored in subtitle data with `hasTypingMistake` property
+- **Visual Effect**: Subtitle overlay receives `.typing-mistake` CSS class with red blinking animation
+- **Auto-Reset**: Mistake state automatically cleared after 600ms animation duration
+
+#### CSS Classes and Animations
+
+**Target Letter Emphasis:**
+
+```css
+.target-letter {
+  background-color: rgba(255, 193, 7, 0.8); /* Amber/yellow */
+  color: #000;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 3px;
+  animation: pulse-target 1.5s ease-in-out infinite;
+}
+```
+
+**Typing Mistake Feedback:**
+
+```css
+.subtitle-overlay.typing-mistake {
+  animation: blink-red 0.6s ease-in-out;
+}
+```
+
+**Technical Features:**
+
+- Smart bracket preservation (text between [brackets] excluded from typing)
+- Real-time progress tracking with visual indicators
+- Automatic state reset when toggling typing mode
+- Performance-optimized rendering with proper React keys
+
 ### Export Format
 
 Selected subtitles are exported as JSON with the following structure:
@@ -340,6 +416,12 @@ Selected subtitles are exported as JSON with the following structure:
 - Ensure the video player area has focus by clicking on it
 - Check that Text Typing Mode is enabled in settings
 - Verify that your browser supports keyboard events
+
+**Target letter not highlighting or mistake feedback not showing:**
+
+- Confirm that Text Typing Mode is enabled (not just Hide Letters Mode)
+- Make sure you're typing letters/numbers (special characters are ignored)
+- Check that the subtitle contains typeable content (not just punctuation or brackets)
 
 **Subtitles not displaying properly:**
 

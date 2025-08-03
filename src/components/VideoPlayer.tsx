@@ -3,7 +3,7 @@ import type { Subtitle, VideoPlayerProps } from '../types';
 import {
   convertLettersToUnderscores,
   extractLettersOnly,
-  revealTypedCharacters,
+  revealTypedCharactersWithEmphasis,
 } from '../utils/textUtils';
 import './VideoPlayer.css';
 
@@ -19,6 +19,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   hideLettersEnabled = false,
   textTypingEnabled = false,
   onTextTyped,
+  onTypingMistake,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoUrl, setVideoUrl] = useState<string>('');
@@ -117,13 +118,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       ) {
         const newTypedText = currentTypedText + event.key.toLowerCase();
         onTextTyped?.(currentSubtitleIndex, newTypedText);
+      } else {
+        // Typing mistake occurred
+        onTypingMistake?.(currentSubtitleIndex);
       }
     };
 
     // Add event listener to document so it works globally when video player is focused
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [textTypingEnabled, currentSubtitleIndex, subtitles, onTextTyped]);
+  }, [textTypingEnabled, currentSubtitleIndex, subtitles, onTextTyped, onTypingMistake]);
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.target as HTMLVideoElement;
@@ -218,7 +222,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 </div>
               )}
               <div
-                className="subtitle-overlay"
+                className={`subtitle-overlay ${
+                  currentSubtitle.hasTypingMistake ? 'typing-mistake' : ''
+                }`}
                 style={{
                   fontSize: `${subtitleFontSize}rem`,
                   left: `${subtitlePosition.x}%`,
@@ -235,23 +241,48 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 aria-label="Draggable subtitle text"
               >
                 {currentSubtitle.text.split('\n').map((line, idx) => {
-                  let displayText: string;
-
                   if (textTypingEnabled && currentSubtitleIndex !== -1) {
-                    // In text typing mode, reveal typed characters with full context
+                    // In text typing mode, reveal typed characters with emphasis
                     const typedText = currentSubtitle.typedText || '';
-                    displayText = revealTypedCharacters(line, typedText, currentSubtitle.text);
-                  } else if (hideLettersEnabled) {
-                    // Regular hide letters mode
-                    displayText = convertLettersToUnderscores(line);
-                  } else {
-                    // Normal display
-                    displayText = line;
-                  }
+                    const segments = revealTypedCharactersWithEmphasis(
+                      line,
+                      typedText,
+                      currentSubtitle.text
+                    );
 
-                  return (
-                    <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>{displayText}</div>
-                  );
+                    return (
+                      <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>
+                        {segments.map((segment, segIdx) =>
+                          segment.isTarget ? (
+                            <span
+                              key={`target-${idx}-${segIdx}-${segment.text}`}
+                              className="target-letter"
+                            >
+                              {segment.text}
+                            </span>
+                          ) : (
+                            <span key={`normal-${idx}-${segIdx}-${segment.text}`}>
+                              {segment.text}
+                            </span>
+                          )
+                        )}
+                      </div>
+                    );
+                  } else {
+                    let displayText: string;
+
+                    if (hideLettersEnabled) {
+                      // Regular hide letters mode
+                      displayText = convertLettersToUnderscores(line);
+                    } else {
+                      // Normal display
+                      displayText = line;
+                    }
+
+                    return (
+                      <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>{displayText}</div>
+                    );
+                  }
                 })}
               </div>
             </>
