@@ -4,7 +4,7 @@ import PreviewModal from './components/PreviewModal';
 import ResizableSplitter from './components/ResizableSplitter';
 import SubtitlePanel from './components/SubtitlePanel';
 import VideoPlayer from './components/VideoPlayer';
-import type { Subtitle } from './types';
+import type { KeyboardShortcuts, Subtitle } from './types';
 import './App.css';
 
 function App() {
@@ -34,6 +34,16 @@ function App() {
     // Load saved setting from localStorage or use default
     const saved = localStorage.getItem('textTypingEnabled');
     return saved ? JSON.parse(saved) : false;
+  });
+  const [keyboardShortcuts, setKeyboardShortcuts] = useState<KeyboardShortcuts>(() => {
+    // Load saved shortcuts from localStorage or use defaults
+    const saved = localStorage.getItem('keyboardShortcuts');
+    return saved
+      ? JSON.parse(saved)
+      : {
+          replay: { key: 'r', ctrlKey: true, altKey: false, shiftKey: false },
+          nextSubtitle: { key: 'n', ctrlKey: true, altKey: false, shiftKey: false },
+        };
   });
 
   useEffect(() => {
@@ -73,6 +83,16 @@ function App() {
         setManualSeekInProgress(false);
       }, 100);
     }
+  };
+
+  const handleManualSeek = () => {
+    // Reset the paused subtitle tracking when manual navigation occurs (keyboard shortcuts)
+    setLastPausedSubtitleIndex(null);
+    // Set manual seek flag briefly to prevent auto-pause interference
+    setManualSeekInProgress(true);
+    setTimeout(() => {
+      setManualSeekInProgress(false);
+    }, 100);
   };
 
   const handleTimeUpdate = (time: number) => {
@@ -249,6 +269,11 @@ function App() {
     );
   };
 
+  const handleUpdateKeyboardShortcuts = (newShortcuts: KeyboardShortcuts) => {
+    setKeyboardShortcuts(newShortcuts);
+    localStorage.setItem('keyboardShortcuts', JSON.stringify(newShortcuts));
+  };
+
   // Close settings popup with Escape key
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -368,6 +393,36 @@ function App() {
                   auto-pause)
                 </span>
               </div>
+
+              <div className="keyboard-shortcuts-section">
+                <div className="control-label">Keyboard Shortcuts</div>
+
+                <div className="shortcut-config">
+                  <div className="shortcut-row">
+                    <span className="shortcut-description">Replay current subtitle:</span>
+                    <div className="shortcut-display">
+                      {keyboardShortcuts.replay.ctrlKey && <kbd>Ctrl</kbd>}
+                      {keyboardShortcuts.replay.altKey && <kbd>Alt</kbd>}
+                      {keyboardShortcuts.replay.shiftKey && <kbd>Shift</kbd>}
+                      <kbd>{keyboardShortcuts.replay.key.toUpperCase()}</kbd>
+                    </div>
+                  </div>
+
+                  <div className="shortcut-row">
+                    <span className="shortcut-description">Go to next subtitle:</span>
+                    <div className="shortcut-display">
+                      {keyboardShortcuts.nextSubtitle.ctrlKey && <kbd>Ctrl</kbd>}
+                      {keyboardShortcuts.nextSubtitle.altKey && <kbd>Alt</kbd>}
+                      {keyboardShortcuts.nextSubtitle.shiftKey && <kbd>Shift</kbd>}
+                      <kbd>{keyboardShortcuts.nextSubtitle.key.toUpperCase()}</kbd>
+                    </div>
+                  </div>
+
+                  <div className="shortcut-note">
+                    <small>Default shortcuts work well with Text Typing mode enabled</small>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </>
@@ -397,6 +452,8 @@ function App() {
             textTypingEnabled={textTypingEnabled}
             onTextTyped={handleTextTyped}
             onTypingMistake={handleTypingMistake}
+            onManualSeek={handleManualSeek}
+            keyboardShortcuts={keyboardShortcuts}
           />
         </div>
 

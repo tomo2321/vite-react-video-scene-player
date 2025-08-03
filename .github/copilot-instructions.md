@@ -13,6 +13,7 @@ This is a React + TypeScript + Vite web application for interactive video playba
 - Load local video files (MP4, WebM, AVI, MOV) and subtitle files (SRT, VTT)
 - Display video player on the left and subtitle panel on the right (responsive layout)
 - Click subtitle lines to jump to matched video scenes with audio playback
+- **Configurable Keyboard Shortcuts**: Default Ctrl+R (replay current subtitle) and Ctrl+N (next subtitle)
 - Overlay subtitles on the video player with draggable positioning
 - Auto-pause mode that stops video at the end of each subtitle
 - Synchronized video-subtitle interaction with precise timing
@@ -25,10 +26,12 @@ This is a React + TypeScript + Vite web application for interactive video playba
   - Red blinking feedback for typing mistakes
   - Letter-by-letter revelation as users type correctly
   - Automatic mistake detection and visual response
+  - **Seamless Navigation Integration**: Works perfectly with Ctrl+R/Ctrl+N shortcuts without conflicts
+- **Keyboard Navigation**: Configurable shortcuts with modifier keys to avoid text typing conflicts
 - **Bracket Preservation**: Text between square brackets [like speaker names] is never hidden
 - **Subtitle Selection**: Checkbox-based selection system for export and preview
-- **Settings Panel**: Adjustable subtitle font size, position reset, and mode toggles
-- **Persistent Settings**: All preferences saved to localStorage
+- **Settings Panel**: Comprehensive settings including keyboard shortcut display and configuration
+- **Persistent Settings**: All preferences including keyboard shortcuts saved to localStorage
 
 ### UI/UX Features
 
@@ -37,6 +40,7 @@ This is a React + TypeScript + Vite web application for interactive video playba
 - Preview modal for selected subtitles
 - JSON export functionality for selected subtitles
 - Visual feedback with highlighting and progress indicators
+- **Keyboard Shortcut Display**: Styled kbd elements showing current shortcuts in settings panel
 
 ## Architecture Guidelines
 
@@ -94,6 +98,7 @@ This is a React + TypeScript + Vite web application for interactive video playba
 - `textTypingEnabled`: Interactive typing mode
 - `subtitleFontSize`: User-adjustable subtitle size
 - `subtitlePosition`: Draggable subtitle position on video
+- `keyboardShortcuts`: Configurable keyboard shortcuts (default: Ctrl+R replay, Ctrl+N next)
 
 ### Selection State
 
@@ -101,6 +106,33 @@ This is a React + TypeScript + Vite web application for interactive video playba
 - `subtitles[].typedText`: Typed characters for text typing mode progress
 - `subtitles[].hasTypingMistake`: Temporary state for typing mistake visual feedback
 - `isPreviewModalOpen`: Preview modal visibility
+
+## Keyboard Shortcuts System
+
+### Configuration Structure
+
+```typescript
+interface KeyboardShortcut {
+  key: string; // The main key (e.g., 'r', 'n')
+  ctrlKey: boolean; // Whether Ctrl key is required
+  altKey: boolean; // Whether Alt key is required
+  shiftKey: boolean; // Whether Shift key is required
+}
+
+interface KeyboardShortcuts {
+  replay: KeyboardShortcut; // Default: Ctrl+R
+  nextSubtitle: KeyboardShortcut; // Default: Ctrl+N
+}
+```
+
+### Implementation Details
+
+- **Smart Conflict Avoidance**: Uses modifier keys (Ctrl) to avoid conflicts with Text Typing Mode
+- **Global Event Handling**: Document-level keyboard event listener with proper cleanup
+- **Context Awareness**: Disables shortcuts when user is typing in input/textarea elements
+- **Visual Feedback**: Settings panel displays current shortcuts with styled kbd elements
+- **Persistent Storage**: Shortcuts saved to localStorage with JSON serialization
+- **Auto-Pause Integration**: Navigation shortcuts properly reset auto-pause tracking
 
 ## Important Libraries & Dependencies
 

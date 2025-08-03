@@ -1,4 +1,28 @@
 /**
+ * Keyboard shortcut configuration
+ */
+export interface KeyboardShortcut {
+  /** The main key (e.g., 'r', 'n') */
+  key: string;
+  /** Whether Ctrl key is required */
+  ctrlKey: boolean;
+  /** Whether Alt key is required */
+  altKey: boolean;
+  /** Whether Shift key is required */
+  shiftKey: boolean;
+}
+
+/**
+ * Keyboard shortcuts configuration
+ */
+export interface KeyboardShortcuts {
+  /** Shortcut to replay current subtitle */
+  replay: KeyboardShortcut;
+  /** Shortcut to go to next subtitle */
+  nextSubtitle: KeyboardShortcut;
+}
+
+/**
  * Subtitle data structure for both SRT and VTT formats
  */
 export interface Subtitle {
@@ -46,6 +70,10 @@ export interface VideoPlayerProps {
   onTextTyped?: (subtitleIndex: number, typedText: string) => void;
   /** Callback when a typing mistake occurs */
   onTypingMistake?: (subtitleIndex: number) => void;
+  /** Callback when manual navigation occurs (for resetting auto-pause tracking) */
+  onManualSeek?: () => void;
+  /** Keyboard shortcuts configuration */
+  keyboardShortcuts?: KeyboardShortcuts;
 }
 
 /**

@@ -20,6 +20,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   textTypingEnabled = false,
   onTextTyped,
   onTypingMistake,
+  onManualSeek,
+  keyboardShortcuts,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoUrl, setVideoUrl] = useState<string>('');
@@ -94,12 +96,87 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     setCurrentSubtitleIndex(subtitleIndex);
   }, [currentTime, subtitles, autoPauseEnabled]);
 
-  // Keyboard event handler for text typing mode
+  // Keyboard event handler for text typing mode and navigation shortcuts
   useEffect(() => {
-    if (!textTypingEnabled || currentSubtitleIndex === -1) return;
-
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Only handle letter and number keys
+      // Check if event matches a configured shortcut
+      const matchesShortcut = (shortcut: {
+        key: string;
+        ctrlKey: boolean;
+        altKey: boolean;
+        shiftKey: boolean;
+      }) => {
+        return (
+          event.key.toLowerCase() === shortcut.key.toLowerCase() &&
+          event.ctrlKey === shortcut.ctrlKey &&
+          event.altKey === shortcut.altKey &&
+          event.shiftKey === shortcut.shiftKey
+        );
+      };
+
+      // Handle navigation shortcuts (replay current, next subtitle)
+      if (keyboardShortcuts) {
+        if (
+          matchesShortcut(keyboardShortcuts.replay) ||
+          matchesShortcut(keyboardShortcuts.nextSubtitle)
+        ) {
+          // Only handle these shortcuts if we're not in an input field or textarea
+          const activeElement = document.activeElement;
+          if (activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA') {
+            return;
+          }
+
+          event.preventDefault();
+
+          if (matchesShortcut(keyboardShortcuts.replay)) {
+            // Replay current subtitle from start
+            if (currentSubtitleIndex !== -1 && videoRef.current) {
+              const currentSub = subtitles[currentSubtitleIndex];
+              if (currentSub) {
+                console.log(
+                  `Replaying subtitle ${currentSubtitleIndex + 1}: "${currentSub.text.substring(0, 30)}..." (auto-pause will be active)`
+                );
+                // Reset auto-pause tracking so it will pause at the end of this subtitle
+                onManualSeek?.();
+                const timeInSeconds = Math.round(currentSub.start) / 1000;
+                videoRef.current.currentTime = timeInSeconds;
+                videoRef.current.play();
+              }
+            } else {
+              console.log('No current subtitle to replay');
+            }
+          } else if (matchesShortcut(keyboardShortcuts.nextSubtitle)) {
+            // Go to next subtitle
+            if (
+              currentSubtitleIndex !== -1 &&
+              currentSubtitleIndex < subtitles.length - 1 &&
+              videoRef.current
+            ) {
+              const nextSub = subtitles[currentSubtitleIndex + 1];
+              if (nextSub) {
+                console.log(
+                  `Going to next subtitle ${currentSubtitleIndex + 2}: "${nextSub.text.substring(0, 30)}..." (auto-pause will be active)`
+                );
+                // Reset auto-pause tracking so it will pause at the end of the next subtitle
+                onManualSeek?.();
+                const timeInSeconds = Math.round(nextSub.start) / 1000;
+                videoRef.current.currentTime = timeInSeconds;
+                videoRef.current.play();
+              }
+            } else if (currentSubtitleIndex === -1) {
+              console.log('No current subtitle to navigate from');
+            } else {
+              console.log('Already at the last subtitle');
+            }
+          }
+          return;
+        }
+      }
+
+      // Handle text typing mode
+      if (!textTypingEnabled || currentSubtitleIndex === -1) return;
+
+      // Only handle letter and number keys for typing mode
       if (!/^[a-zA-Z0-9]$/.test(event.key)) return;
 
       // Prevent default to avoid any browser shortcuts
@@ -127,7 +204,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     // Add event listener to document so it works globally when video player is focused
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [textTypingEnabled, currentSubtitleIndex, subtitles, onTextTyped, onTypingMistake]);
+  }, [
+    textTypingEnabled,
+    currentSubtitleIndex,
+    subtitles,
+    onTextTyped,
+    onTypingMistake,
+    onManualSeek,
+    keyboardShortcuts,
+  ]);
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.target as HTMLVideoElement;

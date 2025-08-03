@@ -1,33 +1,45 @@
 # Video Scene Player
 
-A React-based web application for interactive video playback with synchronized subtitle functionality. Load local video files and SRT or VTT subtitle files, then click on subtitle lines to jump to corresponding video scenes. Enhanced with subtitle selection, export, preview capabilities, and advanced language learning features including interactive text typing with visual feedback.
+A React-based web application for interactive video playback with synchronized subtitle functionality and advanced language learning features. Load local video files and SRT or VTT subtitle files, then use powerful navigation shortcuts and typing practice modes for an enhanced learning experience.
 
 ## Features
 
-### Core Functionality
+### Core Video & Subtitle Features
 
-- 📹 **Video Playback**: Load and play local video files
+- 📹 **Video Playback**: Load and play local video files (MP4, WebM, AVI, MOV)
 - 📝 **Subtitle Support**: Parse and display SRT and VTT subtitle files with index numbers
 - 🎯 **Interactive Navigation**: Click subtitle lines to jump to specific video scenes
+- ⚙️ **Configurable Keyboard Shortcuts**: Customizable navigation shortcuts (default: Ctrl+R to replay, Ctrl+N for next)
 - ⏸️ **Auto-Pause Mode**: Toggle auto-pause to stop video at each subtitle end
 - 🎬 **Subtitle Overlay**: Display subtitles overlaid on the video player with adjustable size
 - 🖱️ **Draggable Subtitles**: Click and drag subtitles on the video to reposition them
-- ⚙️ **Settings Panel**: Customize subtitle appearance with easy-to-use controls
-- 🔤 **Hide Letters Mode**: Convert letters to underscores for language learning (preserves first letter, punctuation, and [bracketed] content)
-- ⌨️ **Text Typing Mode**: Interactive typing practice with enhanced visual feedback - target letter emphasis and mistake detection
+- ⚙️ **Settings Panel**: Comprehensive settings with visual keyboard shortcut display
+- 💾 **Persistent Settings**: All preferences saved automatically across sessions
+
+### Advanced Language Learning Features
+
+- 🔤 **Hide Letters Mode**: Convert letters to bullet points (•) for comprehension practice
+  - Preserves first letter of each word, punctuation, and [bracketed] content
+  - Smart preservation of speaker names and sound effects in brackets
+- ⌨️ **Text Typing Mode**: Interactive typing practice with enhanced visual feedback
+  - Letter-by-letter revelation as you type correctly
+  - Target letter emphasis with pulsing yellow/amber highlight
+  - Red blinking feedback for typing mistakes (600ms duration)
+  - Smart detection of next typeable character
+  - Automatic enabling of hide letters mode and auto-pause
+  - Works seamlessly with keyboard navigation shortcuts
 - 📱 **Responsive Design**: Works on desktop and mobile devices
 - ⚡ **Real-time Sync**: Automatic highlighting of current subtitle based on video time
-- 💾 **Persistent Settings**: User preferences saved automatically across sessions
 
-### Subtitle Management
+### Subtitle Management & Export
 
 - ✅ **Subtitle Selection**: Check individual subtitles using checkboxes
 - 🔢 **Index Display**: Show original subtitle index numbers from SRT files
 - 🎨 **Visual Selection**: Selected subtitles highlighted in yellow
 - 📄 **Preview Modal**: Preview selected subtitles in a clean modal interface
-- 💾 **JSON Export**: Download selected subtitles as JSON files
-- 📋 **Bulk Actions**: Select All and Clear All subtitle selections
-- 📊 **Selection Status**: Real-time display of selection count
+- 💾 **JSON Export**: Download selected subtitles as JSON files with metadata
+- 📋 **Bulk Actions**: Select All and Clear All subtitle selections with one click
+- 📊 **Selection Status**: Real-time display of selection count and feedback
 
 ## Getting Started
 
@@ -66,21 +78,36 @@ A React-based web application for interactive video playback with synchronized s
 1. **Load a Video**: Click the "📹 Load Video" button to select a local video file (MP4, WebM, AVI, etc.)
 2. **Load Subtitle**: Click the "📝 Load Subtitle" button to select an SRT or VTT subtitle file
 3. **Auto-Pause Mode** (Optional): Toggle the "⏸️ Auto-pause" button to enable/disable automatic pausing at subtitle end times
-4. **Settings** (Optional): Click the "⚙️" settings button to:
-   - Adjust subtitle text size (0.8rem to 2.5rem)
-   - Reset subtitle position to default
-   - Toggle "Hide Letters Mode" for language learning practice
-   - Preferences are automatically saved
+4. **Settings Panel** (Optional): Click the "⚙️" settings button to access:
+   - **Subtitle Size**: Adjust text size (0.8rem to 2.5rem)
+   - **Position Reset**: Reset subtitle position to default center-bottom
+   - **Hide Letters Mode**: Toggle for language learning practice
+   - **Text Typing Mode**: Toggle for interactive typing practice
+   - **Keyboard Shortcuts**: View current navigation shortcuts (Ctrl+R, Ctrl+N by default)
+   - All preferences are automatically saved to localStorage
 
-#### Interactive Playback
+#### Interactive Playbook & Navigation
+
+**Click Navigation:**
 
 - Click any subtitle line in the right panel to jump to that scene
 - **Drag subtitles** on the video to reposition them anywhere on screen
 - The video will automatically play from the selected timestamp
 - Current subtitle is highlighted both in the panel and overlaid on the video
+
+**Keyboard Navigation (New!):**
+
+- **Ctrl+R**: Replay current subtitle from start (works with auto-pause)
+- **Ctrl+N**: Go to next subtitle (works with auto-pause)
+- Navigation shortcuts work seamlessly with Text Typing Mode enabled
+- Shortcuts are configurable and displayed in the settings panel
+
+**Auto-Pause Behavior:**
+
 - With auto-pause enabled: Video automatically pauses at the end of each subtitle
 - With auto-pause enabled: Subtitles remain visible until the next subtitle starts
-- With auto-pause enabled: Clicking a subtitle jumps to that scene and continues playing until the subtitle ends
+- With auto-pause enabled: Navigation shortcuts (Ctrl+R/Ctrl+N) reset pause tracking for smooth playback
+- Manual navigation (clicking subtitles or using shortcuts) automatically resumes playback
 
 #### Subtitle Selection and Export
 
@@ -123,10 +150,16 @@ The Text Typing Mode provides an interactive typing practice experience with enh
    - **Mistake Feedback**: When you type an incorrect letter, the subtitle background blinks red for 0.6 seconds
    - A blue indicator shows "Text Typing Mode Active" with progress
    - Progress counter shows how many letters you've typed vs. total letters
-4. **Usage Tips**:
+4. **Navigation Integration**:
+   - **Seamless with Shortcuts**: Use Ctrl+R to replay current subtitle, Ctrl+N for next while typing
+   - **No Conflicts**: Navigation shortcuts use modifier keys, so typing 'r' and 'n' letters works normally
+   - **Smart Auto-Pause**: Navigation shortcuts properly reset auto-pause tracking for smooth learning flow
+5. **Usage Tips**:
    - Focus on the video player area for keyboard input to work
    - Only letters and numbers are recognized for typing
    - Type at your own pace - there's no time limit
+   - Use Ctrl+R to replay difficult subtitles for extra practice
+   - Use Ctrl+N to skip to the next subtitle when ready
    - Use this mode to improve spelling, vocabulary, and listening comprehension
 
 **Visual Design Features:**
@@ -139,17 +172,36 @@ The Text Typing Mode provides an interactive typing practice experience with enh
 
 #### Keyboard Shortcuts
 
-While in Text Typing Mode:
+**Navigation Shortcuts (Configurable):**
 
-- **Letter keys (A-Z, 0-9)**: Type characters to reveal letters
-- **Escape**: Close settings panel if open
+- **Ctrl+R** (default): Replay current subtitle from start
+  - Works in all modes (normal playback, auto-pause, text typing)
+  - Properly resets auto-pause tracking for seamless learning
+  - Console logs the action for debugging/feedback
+- **Ctrl+N** (default): Go to next subtitle
+  - Jumps to the beginning of the next subtitle
+  - Works in all modes without interfering with text typing
+  - Automatically plays the video from the next subtitle start time
+
+**Text Typing Mode Shortcuts:**
+
+- **Letter keys (A-Z, 0-9)**: Type characters to reveal letters progressively
+- **Ctrl+R**: Replay current subtitle for extra practice (typing progress is preserved)
+- **Ctrl+N**: Move to next subtitle when ready (typing progress resets for new subtitle)
+
+**General Application Shortcuts:**
+
+- **Escape**: Close settings panel or modals if open
+- **Enter or Space**: Activate focused subtitle line (when using keyboard navigation)
+- **Tab**: Navigate between interactive elements (accessibility support)
+
+**Focus and Input Areas:**
+
 - **Click on video**: Focus the video player area for keyboard input
+- **Input fields**: Navigation shortcuts are disabled when typing in input/textarea elements
+- **Global listening**: Keyboard navigation works from anywhere in the application
 
-General navigation:
-
-- **Enter or Space**: Activate focused subtitle line
-- **Tab**: Navigate between interactive elements
-- **Escape**: Close modals and settings panels
+> **Key Benefits**: The default Ctrl+R and Ctrl+N shortcuts work seamlessly with Text Typing Mode, allowing you to practice typing letters while using navigation shortcuts without any conflicts. This design follows standard application shortcut conventions and provides a professional user experience.
 
 ### Supported Formats
 
@@ -160,12 +212,23 @@ General navigation:
 ## Technology Stack
 
 - **React 18** - UI framework with hooks and state management
-- **TypeScript** - Type safety and better development experience
-- **Vite** - Fast build tool and development server
+- **TypeScript** - Type safety with comprehensive interfaces for shortcuts, subtitles, and components
+- **Vite** - Fast build tool and development server with hot module replacement
 - **Biome** - Fast linter and formatter for JavaScript/TypeScript
-- **Custom Parsers** - Manual SRT and VTT subtitle parsing with index extraction
-- **CSS3** - Modern styling with keyframe animations (target letter emphasis, mistake feedback) and responsive design
-- **localStorage** - Persistent user settings storage
+- **Custom Parsers** - Manual SRT and VTT subtitle parsing with index extraction and error handling
+- **CSS3** - Modern styling with:
+  - Keyframe animations (target letter emphasis, mistake feedback)
+  - Responsive design with mobile-first approach
+  - Smooth transitions and visual feedback effects
+  - Custom styled keyboard shortcut displays
+- **localStorage** - Persistent user settings storage for:
+  - Keyboard shortcuts configuration
+  - Text typing preferences
+  - Hide letters mode settings
+  - Subtitle font size and position
+  - Auto-pause preferences
+- **Browser APIs** - HTML5 Video API, File API, Keyboard Events, Mouse Events
+- **Custom State Management** - React hooks with TypeScript for complex state interactions
 
 ## Project Structure
 
@@ -411,17 +474,39 @@ Selected subtitles are exported as JSON with the following structure:
 
 ### Common Issues
 
+**Keyboard shortcuts (Ctrl+R, Ctrl+N) not working:**
+
+- Ensure you're not typing in an input field or textarea
+- Make sure to use the Ctrl key along with R or N (not just R or N alone)
+- Check that the video and subtitles are loaded
+- Verify there's a current active subtitle for replay functionality
+- Check browser console for any error messages
+
 **Text Typing Mode not responding to keyboard input:**
 
 - Ensure the video player area has focus by clicking on it
 - Check that Text Typing Mode is enabled in settings
 - Verify that your browser supports keyboard events
+- Note: Navigation shortcuts (Ctrl+R, Ctrl+N) should still work while in Text Typing Mode
+
+**Keyboard shortcuts conflicting with text typing:**
+
+- This should not happen with the default Ctrl+R and Ctrl+N shortcuts
+- If you experience issues, try clicking away from any input fields
+- The application is designed so that modifier key shortcuts don't interfere with letter typing
 
 **Target letter not highlighting or mistake feedback not showing:**
 
 - Confirm that Text Typing Mode is enabled (not just Hide Letters Mode)
 - Make sure you're typing letters/numbers (special characters are ignored)
 - Check that the subtitle contains typeable content (not just punctuation or brackets)
+- Verify that you're typing the correct next letter in sequence
+
+**Navigation shortcuts not replaying/advancing properly:**
+
+- Check that auto-pause mode is enabled for best experience with navigation shortcuts
+- Ensure there are multiple subtitles loaded for next subtitle functionality
+- Console will log navigation actions - check browser dev tools for feedback
 
 **Subtitles not displaying properly:**
 
