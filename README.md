@@ -9,7 +9,7 @@ A React-based web application for interactive video playback with synchronized s
 - 📹 **Video Playback**: Load and play local video files (MP4, WebM, AVI, MOV)
 - 📝 **Subtitle Support**: Parse and display SRT and VTT subtitle files with index numbers
 - 🎯 **Interactive Navigation**: Click subtitle lines to jump to specific video scenes
-- ⚙️ **Configurable Keyboard Shortcuts**: Customizable navigation shortcuts (default: Ctrl+R to replay, Ctrl+N for next)
+- ⚙️ **Configurable Keyboard Shortcuts**: Customizable navigation shortcuts (default: Ctrl+R to replay, Ctrl+B for previous, Ctrl+N for next)
 - ⏸️ **Auto-Pause Mode**: Toggle auto-pause to stop video at each subtitle end
 - 🎬 **Subtitle Overlay**: Display subtitles overlaid on the video player with adjustable size
 - 🖱️ **Draggable Subtitles**: Click and drag subtitles on the video to reposition them
@@ -83,7 +83,7 @@ A React-based web application for interactive video playback with synchronized s
    - **Position Reset**: Reset subtitle position to default center-bottom
    - **Hide Letters Mode**: Toggle for language learning practice
    - **Text Typing Mode**: Toggle for interactive typing practice
-   - **Keyboard Shortcuts**: View current navigation shortcuts (Ctrl+R, Ctrl+N by default)
+   - **Keyboard Shortcuts**: View current navigation shortcuts (Ctrl+R, Ctrl+B, Ctrl+N by default)
    - All preferences are automatically saved to localStorage
 
 #### Interactive Playbook & Navigation
@@ -98,6 +98,7 @@ A React-based web application for interactive video playback with synchronized s
 **Keyboard Navigation (New!):**
 
 - **Ctrl+R**: Replay current subtitle from start (works with auto-pause)
+- **Ctrl+B**: Go to previous subtitle (works with auto-pause)
 - **Ctrl+N**: Go to next subtitle (works with auto-pause)
 - Navigation shortcuts work seamlessly with Text Typing Mode enabled
 - Shortcuts are configurable and displayed in the settings panel
@@ -106,7 +107,7 @@ A React-based web application for interactive video playback with synchronized s
 
 - With auto-pause enabled: Video automatically pauses at the end of each subtitle
 - With auto-pause enabled: Subtitles remain visible until the next subtitle starts
-- With auto-pause enabled: Navigation shortcuts (Ctrl+R/Ctrl+N) reset pause tracking for smooth playback
+- With auto-pause enabled: Navigation shortcuts (Ctrl+R/Ctrl+B/Ctrl+N) reset pause tracking for smooth playback
 - Manual navigation (clicking subtitles or using shortcuts) automatically resumes playback
 
 #### Subtitle Selection and Export
@@ -151,14 +152,15 @@ The Text Typing Mode provides an interactive typing practice experience with enh
    - A blue indicator shows "Text Typing Mode Active" with progress
    - Progress counter shows how many letters you've typed vs. total letters
 4. **Navigation Integration**:
-   - **Seamless with Shortcuts**: Use Ctrl+R to replay current subtitle, Ctrl+N for next while typing
-   - **No Conflicts**: Navigation shortcuts use modifier keys, so typing 'r' and 'n' letters works normally
+   - **Seamless with Shortcuts**: Use Ctrl+R to replay current subtitle, Ctrl+B for previous, Ctrl+N for next while typing
+   - **No Conflicts**: Navigation shortcuts use modifier keys, so typing 'r', 'b', and 'n' letters works normally
    - **Smart Auto-Pause**: Navigation shortcuts properly reset auto-pause tracking for smooth learning flow
 5. **Usage Tips**:
    - Focus on the video player area for keyboard input to work
    - Only letters and numbers are recognized for typing
    - Type at your own pace - there's no time limit
    - Use Ctrl+R to replay difficult subtitles for extra practice
+   - Use Ctrl+B to go back to previous subtitles for review
    - Use Ctrl+N to skip to the next subtitle when ready
    - Use this mode to improve spelling, vocabulary, and listening comprehension
 
@@ -178,6 +180,11 @@ The Text Typing Mode provides an interactive typing practice experience with enh
   - Works in all modes (normal playback, auto-pause, text typing)
   - Properly resets auto-pause tracking for seamless learning
   - Console logs the action for debugging/feedback
+- **Ctrl+B** (default): Go to previous subtitle
+  - Jumps to the beginning of the previous subtitle
+  - Works in all modes without interfering with text typing
+  - Automatically plays the video from the previous subtitle start time
+  - Provides feedback when already at the first subtitle
 - **Ctrl+N** (default): Go to next subtitle
   - Jumps to the beginning of the next subtitle
   - Works in all modes without interfering with text typing
@@ -187,6 +194,7 @@ The Text Typing Mode provides an interactive typing practice experience with enh
 
 - **Letter keys (A-Z, 0-9)**: Type characters to reveal letters progressively
 - **Ctrl+R**: Replay current subtitle for extra practice (typing progress is preserved)
+- **Ctrl+B**: Go to previous subtitle for review (typing progress resets for previous subtitle)
 - **Ctrl+N**: Move to next subtitle when ready (typing progress resets for new subtitle)
 
 **General Application Shortcuts:**
@@ -201,7 +209,7 @@ The Text Typing Mode provides an interactive typing practice experience with enh
 - **Input fields**: Navigation shortcuts are disabled when typing in input/textarea elements
 - **Global listening**: Keyboard navigation works from anywhere in the application
 
-> **Key Benefits**: The default Ctrl+R and Ctrl+N shortcuts work seamlessly with Text Typing Mode, allowing you to practice typing letters while using navigation shortcuts without any conflicts. This design follows standard application shortcut conventions and provides a professional user experience.
+> **Key Benefits**: The default Ctrl+R, Ctrl+B, and Ctrl+N shortcuts work seamlessly with Text Typing Mode, allowing you to practice typing letters while using navigation shortcuts without any conflicts. This design follows standard application shortcut conventions and provides a professional user experience.
 
 ### Supported Formats
 
@@ -295,7 +303,7 @@ The application is designed to be extensible. Recent implementations and future 
 - Video playback speed controls
 - Subtitle text search functionality
 - Multiple difficulty levels for Hide Letters Mode (hide more/fewer letters)
-- Keyboard shortcuts for navigation
+- **Keyboard shortcuts for navigation** - Enhanced with Ctrl+R (replay), Ctrl+B (previous), Ctrl+N (next) functionality
 - Loop mode for current subtitle
 - Export functionality for edited subtitles (SRT/VTT)
 - Subtitle timing adjustment tools
@@ -474,12 +482,13 @@ Selected subtitles are exported as JSON with the following structure:
 
 ### Common Issues
 
-**Keyboard shortcuts (Ctrl+R, Ctrl+N) not working:**
+**Keyboard shortcuts (Ctrl+R, Ctrl+B, Ctrl+N) not working:**
 
 - Ensure you're not typing in an input field or textarea
-- Make sure to use the Ctrl key along with R or N (not just R or N alone)
+- Make sure to use the Ctrl key along with R, B, or N (not just the letters alone)
 - Check that the video and subtitles are loaded
 - Verify there's a current active subtitle for replay functionality
+- For previous/next navigation, ensure you're not at the first/last subtitle respectively
 - Check browser console for any error messages
 
 **Text Typing Mode not responding to keyboard input:**
@@ -487,11 +496,11 @@ Selected subtitles are exported as JSON with the following structure:
 - Ensure the video player area has focus by clicking on it
 - Check that Text Typing Mode is enabled in settings
 - Verify that your browser supports keyboard events
-- Note: Navigation shortcuts (Ctrl+R, Ctrl+N) should still work while in Text Typing Mode
+- Note: Navigation shortcuts (Ctrl+R, Ctrl+B, Ctrl+N) should still work while in Text Typing Mode
 
 **Keyboard shortcuts conflicting with text typing:**
 
-- This should not happen with the default Ctrl+R and Ctrl+N shortcuts
+- This should not happen with the default Ctrl+R, Ctrl+B, and Ctrl+N shortcuts
 - If you experience issues, try clicking away from any input fields
 - The application is designed so that modifier key shortcuts don't interfere with letter typing
 

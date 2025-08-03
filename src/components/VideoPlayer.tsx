@@ -114,10 +114,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         );
       };
 
-      // Handle navigation shortcuts (replay current, next subtitle)
+      // Handle navigation shortcuts (replay current, previous subtitle, next subtitle)
       if (keyboardShortcuts) {
         if (
           matchesShortcut(keyboardShortcuts.replay) ||
+          matchesShortcut(keyboardShortcuts.previousSubtitle) ||
           matchesShortcut(keyboardShortcuts.nextSubtitle)
         ) {
           // Only handle these shortcuts if we're not in an input field or textarea
@@ -144,6 +145,25 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               }
             } else {
               console.log('No current subtitle to replay');
+            }
+          } else if (matchesShortcut(keyboardShortcuts.previousSubtitle)) {
+            // Go to previous subtitle
+            if (currentSubtitleIndex !== -1 && currentSubtitleIndex > 0 && videoRef.current) {
+              const previousSub = subtitles[currentSubtitleIndex - 1];
+              if (previousSub) {
+                console.log(
+                  `Going to previous subtitle ${currentSubtitleIndex}: "${previousSub.text.substring(0, 30)}..." (auto-pause will be active)`
+                );
+                // Reset auto-pause tracking so it will pause at the end of the previous subtitle
+                onManualSeek?.();
+                const timeInSeconds = Math.round(previousSub.start) / 1000;
+                videoRef.current.currentTime = timeInSeconds;
+                videoRef.current.play();
+              }
+            } else if (currentSubtitleIndex === -1) {
+              console.log('No current subtitle to navigate from');
+            } else {
+              console.log('Already at the first subtitle');
             }
           } else if (matchesShortcut(keyboardShortcuts.nextSubtitle)) {
             // Go to next subtitle

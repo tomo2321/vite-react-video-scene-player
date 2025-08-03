@@ -20,6 +20,8 @@ export interface KeyboardShortcuts {
   replay: KeyboardShortcut;
   /** Shortcut to go to next subtitle */
   nextSubtitle: KeyboardShortcut;
+  /** Shortcut to go to previous subtitle */
+  previousSubtitle: KeyboardShortcut;
 }
 
 /**

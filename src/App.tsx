@@ -43,9 +43,9 @@ function App() {
       : {
           replay: { key: 'r', ctrlKey: true, altKey: false, shiftKey: false },
           nextSubtitle: { key: 'n', ctrlKey: true, altKey: false, shiftKey: false },
+          previousSubtitle: { key: 'b', ctrlKey: true, altKey: false, shiftKey: false },
         };
   });
-
   useEffect(() => {
     const handleWindowResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -405,6 +405,16 @@ function App() {
                       {keyboardShortcuts.replay.altKey && <kbd>Alt</kbd>}
                       {keyboardShortcuts.replay.shiftKey && <kbd>Shift</kbd>}
                       <kbd>{keyboardShortcuts.replay.key.toUpperCase()}</kbd>
+                    </div>
+                  </div>
+
+                  <div className="shortcut-row">
+                    <span className="shortcut-description">Go to previous subtitle:</span>
+                    <div className="shortcut-display">
+                      {keyboardShortcuts.previousSubtitle.ctrlKey && <kbd>Ctrl</kbd>}
+                      {keyboardShortcuts.previousSubtitle.altKey && <kbd>Alt</kbd>}
+                      {keyboardShortcuts.previousSubtitle.shiftKey && <kbd>Shift</kbd>}
+                      <kbd>{keyboardShortcuts.previousSubtitle.key.toUpperCase()}</kbd>
                     </div>
                   </div>
 

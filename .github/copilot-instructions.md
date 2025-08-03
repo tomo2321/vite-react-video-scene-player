@@ -13,7 +13,7 @@ This is a React + TypeScript + Vite web application for interactive video playba
 - Load local video files (MP4, WebM, AVI, MOV) and subtitle files (SRT, VTT)
 - Display video player on the left and subtitle panel on the right (responsive layout)
 - Click subtitle lines to jump to matched video scenes with audio playback
-- **Configurable Keyboard Shortcuts**: Default Ctrl+R (replay current subtitle) and Ctrl+N (next subtitle)
+- **Configurable Keyboard Shortcuts**: Default Ctrl+R (replay current subtitle), Ctrl+B (previous subtitle), and Ctrl+N (next subtitle)
 - Overlay subtitles on the video player with draggable positioning
 - Auto-pause mode that stops video at the end of each subtitle
 - Synchronized video-subtitle interaction with precise timing
@@ -26,7 +26,7 @@ This is a React + TypeScript + Vite web application for interactive video playba
   - Red blinking feedback for typing mistakes
   - Letter-by-letter revelation as users type correctly
   - Automatic mistake detection and visual response
-  - **Seamless Navigation Integration**: Works perfectly with Ctrl+R/Ctrl+N shortcuts without conflicts
+  - **Seamless Navigation Integration**: Works perfectly with Ctrl+R/Ctrl+B/Ctrl+N shortcuts without conflicts
 - **Keyboard Navigation**: Configurable shortcuts with modifier keys to avoid text typing conflicts
 - **Bracket Preservation**: Text between square brackets [like speaker names] is never hidden
 - **Subtitle Selection**: Checkbox-based selection system for export and preview
@@ -98,7 +98,7 @@ This is a React + TypeScript + Vite web application for interactive video playba
 - `textTypingEnabled`: Interactive typing mode
 - `subtitleFontSize`: User-adjustable subtitle size
 - `subtitlePosition`: Draggable subtitle position on video
-- `keyboardShortcuts`: Configurable keyboard shortcuts (default: Ctrl+R replay, Ctrl+N next)
+- `keyboardShortcuts`: Configurable keyboard shortcuts (default: Ctrl+R replay, Ctrl+B previous, Ctrl+N next)
 
 ### Selection State
 
@@ -122,6 +122,7 @@ interface KeyboardShortcut {
 interface KeyboardShortcuts {
   replay: KeyboardShortcut; // Default: Ctrl+R
   nextSubtitle: KeyboardShortcut; // Default: Ctrl+N
+  previousSubtitle: KeyboardShortcut; // Default: Ctrl+B
 }
 ```
 
