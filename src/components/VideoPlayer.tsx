@@ -18,9 +18,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   resetPositionTrigger,
   hideLettersEnabled = false,
   textTypingEnabled = false,
+  subtitleOverlayVisible = true,
   onTextTyped,
   onTypingMistake,
   onManualSeek,
+  onToggleSubtitleVisibility,
   keyboardShortcuts,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -119,7 +121,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         if (
           matchesShortcut(keyboardShortcuts.replay) ||
           matchesShortcut(keyboardShortcuts.previousSubtitle) ||
-          matchesShortcut(keyboardShortcuts.nextSubtitle)
+          matchesShortcut(keyboardShortcuts.nextSubtitle) ||
+          matchesShortcut(keyboardShortcuts.toggleSubtitleVisibility)
         ) {
           // Only handle these shortcuts if we're not in an input field or textarea
           const activeElement = document.activeElement;
@@ -128,6 +131,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           }
 
           event.preventDefault();
+
+          if (matchesShortcut(keyboardShortcuts.toggleSubtitleVisibility)) {
+            // Toggle subtitle overlay visibility
+            onToggleSubtitleVisibility?.();
+            return;
+          }
 
           if (matchesShortcut(keyboardShortcuts.replay)) {
             // Replay current subtitle from start
@@ -231,6 +240,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     onTextTyped,
     onTypingMistake,
     onManualSeek,
+    onToggleSubtitleVisibility,
     keyboardShortcuts,
   ]);
 
@@ -326,70 +336,79 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   </span>
                 </div>
               )}
-              <div
-                className={`subtitle-overlay ${
-                  currentSubtitle.hasTypingMistake ? 'typing-mistake' : ''
-                }`}
-                style={{
-                  fontSize: `${subtitleFontSize}rem`,
-                  left: `${subtitlePosition.x}%`,
-                  top: `${subtitlePosition.y}%`,
-                  bottom: 'auto',
-                  transform: 'translate(-50%, -50%)',
-                  cursor: isDragging ? 'grabbing' : 'grab',
-                  userSelect: 'none',
-                }}
-                onMouseDown={handleSubtitleMouseDown}
-                title="Drag to reposition subtitles"
-                role="button"
-                tabIndex={0}
-                aria-label="Draggable subtitle text"
-              >
-                {currentSubtitle.text.split('\n').map((line, idx) => {
-                  if (textTypingEnabled && currentSubtitleIndex !== -1) {
-                    // In text typing mode, reveal typed characters with emphasis
-                    const typedText = currentSubtitle.typedText || '';
-                    const segments = revealTypedCharactersWithEmphasis(
-                      line,
-                      typedText,
-                      currentSubtitle.text
-                    );
+              {!subtitleOverlayVisible && (
+                <div className="subtitle-hidden-indicator">
+                  <span>👁️‍🗨️ Subtitles Hidden - Press Ctrl+H to show</span>
+                </div>
+              )}
+              {subtitleOverlayVisible && (
+                <div
+                  className={`subtitle-overlay ${
+                    currentSubtitle.hasTypingMistake ? 'typing-mistake' : ''
+                  }`}
+                  style={{
+                    fontSize: `${subtitleFontSize}rem`,
+                    left: `${subtitlePosition.x}%`,
+                    top: `${subtitlePosition.y}%`,
+                    bottom: 'auto',
+                    transform: 'translate(-50%, -50%)',
+                    cursor: isDragging ? 'grabbing' : 'grab',
+                    userSelect: 'none',
+                  }}
+                  onMouseDown={handleSubtitleMouseDown}
+                  title="Drag to reposition subtitles"
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Draggable subtitle text"
+                >
+                  {currentSubtitle.text.split('\n').map((line, idx) => {
+                    if (textTypingEnabled && currentSubtitleIndex !== -1) {
+                      // In text typing mode, reveal typed characters with emphasis
+                      const typedText = currentSubtitle.typedText || '';
+                      const segments = revealTypedCharactersWithEmphasis(
+                        line,
+                        typedText,
+                        currentSubtitle.text
+                      );
 
-                    return (
-                      <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>
-                        {segments.map((segment, segIdx) =>
-                          segment.isTarget ? (
-                            <span
-                              key={`target-${idx}-${segIdx}-${segment.text}`}
-                              className="target-letter"
-                            >
-                              {segment.text}
-                            </span>
-                          ) : (
-                            <span key={`normal-${idx}-${segIdx}-${segment.text}`}>
-                              {segment.text}
-                            </span>
-                          )
-                        )}
-                      </div>
-                    );
-                  } else {
-                    let displayText: string;
-
-                    if (hideLettersEnabled) {
-                      // Regular hide letters mode
-                      displayText = convertLettersToUnderscores(line);
+                      return (
+                        <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>
+                          {segments.map((segment, segIdx) =>
+                            segment.isTarget ? (
+                              <span
+                                key={`target-${idx}-${segIdx}-${segment.text}`}
+                                className="target-letter"
+                              >
+                                {segment.text}
+                              </span>
+                            ) : (
+                              <span key={`normal-${idx}-${segIdx}-${segment.text}`}>
+                                {segment.text}
+                              </span>
+                            )
+                          )}
+                        </div>
+                      );
                     } else {
-                      // Normal display
-                      displayText = line;
-                    }
+                      let displayText: string;
 
-                    return (
-                      <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>{displayText}</div>
-                    );
-                  }
-                })}
-              </div>
+                      if (hideLettersEnabled) {
+                        // Regular hide letters mode
+                        displayText = convertLettersToUnderscores(line);
+                      } else {
+                        // Normal display
+                        displayText = line;
+                      }
+
+                      return (
+                        <div key={`subtitle-line-${idx}-${line.substring(0, 10)}`}>
+                          {displayText}
+                        </div>
+                      );
+                    }
+                  })}
+                </div>
+              )}
             </>
           )}
         </div>

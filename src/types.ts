@@ -22,6 +22,8 @@ export interface KeyboardShortcuts {
   nextSubtitle: KeyboardShortcut;
   /** Shortcut to go to previous subtitle */
   previousSubtitle: KeyboardShortcut;
+  /** Shortcut to toggle subtitle overlay visibility */
+  toggleSubtitleVisibility: KeyboardShortcut;
 }
 
 /**
@@ -68,12 +70,16 @@ export interface VideoPlayerProps {
   hideLettersEnabled?: boolean;
   /** Whether text typing mode is enabled */
   textTypingEnabled?: boolean;
+  /** Whether subtitle overlay is visible */
+  subtitleOverlayVisible?: boolean;
   /** Callback when correct letters are typed in typing mode */
   onTextTyped?: (subtitleIndex: number, typedText: string) => void;
   /** Callback when a typing mistake occurs */
   onTypingMistake?: (subtitleIndex: number) => void;
   /** Callback when manual navigation occurs (for resetting auto-pause tracking) */
   onManualSeek?: () => void;
+  /** Callback when subtitle overlay visibility is toggled */
+  onToggleSubtitleVisibility?: () => void;
   /** Keyboard shortcuts configuration */
   keyboardShortcuts?: KeyboardShortcuts;
 }

@@ -51,6 +51,11 @@ function App() {
     const saved = localStorage.getItem('textTypingEnabled');
     return saved ? JSON.parse(saved) : false;
   });
+  const [subtitleOverlayVisible, setSubtitleOverlayVisible] = useState(() => {
+    // Load saved setting from localStorage or use default (true - visible by default)
+    const saved = localStorage.getItem('subtitleOverlayVisible');
+    return saved ? JSON.parse(saved) : true;
+  });
   const [keyboardShortcuts, setKeyboardShortcuts] = useState<KeyboardShortcuts>(() => {
     // Load saved shortcuts from localStorage or use defaults
     const saved = localStorage.getItem('keyboardShortcuts');
@@ -60,6 +65,7 @@ function App() {
           replay: { key: 'r', ctrlKey: true, altKey: false, shiftKey: false },
           nextSubtitle: { key: 'n', ctrlKey: true, altKey: false, shiftKey: false },
           previousSubtitle: { key: 'b', ctrlKey: true, altKey: false, shiftKey: false },
+          toggleSubtitleVisibility: { key: 'h', ctrlKey: true, altKey: false, shiftKey: false },
         };
   });
   useEffect(() => {
@@ -297,6 +303,12 @@ function App() {
     );
   };
 
+  const toggleSubtitleOverlayVisibility = () => {
+    const newValue = !subtitleOverlayVisible;
+    setSubtitleOverlayVisible(newValue);
+    localStorage.setItem('subtitleOverlayVisible', JSON.stringify(newValue));
+  };
+
   const handleUpdateKeyboardShortcuts = (newShortcuts: KeyboardShortcuts) => {
     setKeyboardShortcuts(newShortcuts);
     localStorage.setItem('keyboardShortcuts', JSON.stringify(newShortcuts));
@@ -427,6 +439,21 @@ function App() {
                 </span>
               </div>
 
+              <div className="subtitle-overlay-control">
+                <div className="control-label">Subtitle Overlay Visibility</div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={subtitleOverlayVisible}
+                    onChange={toggleSubtitleOverlayVisibility}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+                <span className="toggle-hint">
+                  Show or hide subtitle text overlaid on the video (use Ctrl+H to toggle quickly)
+                </span>
+              </div>
+
               <div className="keyboard-shortcuts-section">
                 <div className="control-label">Keyboard Shortcuts</div>
 
@@ -458,6 +485,16 @@ function App() {
                       {keyboardShortcuts.nextSubtitle.altKey && <kbd>Alt</kbd>}
                       {keyboardShortcuts.nextSubtitle.shiftKey && <kbd>Shift</kbd>}
                       <kbd>{keyboardShortcuts.nextSubtitle.key.toUpperCase()}</kbd>
+                    </div>
+                  </div>
+
+                  <div className="shortcut-row">
+                    <span className="shortcut-description">Toggle subtitle overlay:</span>
+                    <div className="shortcut-display">
+                      {keyboardShortcuts.toggleSubtitleVisibility.ctrlKey && <kbd>Ctrl</kbd>}
+                      {keyboardShortcuts.toggleSubtitleVisibility.altKey && <kbd>Alt</kbd>}
+                      {keyboardShortcuts.toggleSubtitleVisibility.shiftKey && <kbd>Shift</kbd>}
+                      <kbd>{keyboardShortcuts.toggleSubtitleVisibility.key.toUpperCase()}</kbd>
                     </div>
                   </div>
 
@@ -493,9 +530,11 @@ function App() {
             resetPositionTrigger={resetSubtitlePositionTrigger}
             hideLettersEnabled={hideLettersEnabled}
             textTypingEnabled={textTypingEnabled}
+            subtitleOverlayVisible={subtitleOverlayVisible}
             onTextTyped={handleTextTyped}
             onTypingMistake={handleTypingMistake}
             onManualSeek={handleManualSeek}
+            onToggleSubtitleVisibility={toggleSubtitleOverlayVisibility}
             keyboardShortcuts={keyboardShortcuts}
           />
         </div>

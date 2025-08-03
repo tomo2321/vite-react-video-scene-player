@@ -51,10 +51,11 @@ A React-based web application for interactive video playback with synchronized s
 - 📹 **Video Playback**: Load and play local video files (MP4, WebM, AVI, MOV)
 - 📝 **Subtitle Support**: Parse and display SRT and VTT subtitle files with index numbers
 - 🎯 **Interactive Navigation**: Click subtitle lines to jump to specific video scenes
-- ⚙️ **Configurable Keyboard Shortcuts**: Customizable navigation shortcuts (default: Ctrl+R to replay, Ctrl+B for previous, Ctrl+N for next)
+- ⚙️ **Configurable Keyboard Shortcuts**: Customizable navigation shortcuts (default: Ctrl+R to replay, Ctrl+B for previous, Ctrl+N for next, Ctrl+H to toggle subtitles)
 - ⏸️ **Auto-Pause Mode**: Toggle auto-pause to stop video at each subtitle end
 - 🎬 **Subtitle Overlay**: Display subtitles overlaid on the video player with adjustable size
-- 🖱️ **Draggable Subtitles**: Click and drag subtitles on the video to reposition them
+- �️ **Subtitle Visibility Toggle**: Instantly show/hide subtitle overlays with Ctrl+H shortcut or settings toggle
+- �🖱️ **Draggable Subtitles**: Click and drag subtitles on the video to reposition them
 - ⚙️ **Settings Panel**: Comprehensive settings with visual keyboard shortcut display
 - 💾 **Persistent Settings**: All preferences saved automatically across sessions
 
@@ -127,7 +128,8 @@ A React-based web application for interactive video playback with synchronized s
    - **Auto-Pause Mode**: Toggle automatic pausing at subtitle end times
    - **Hide Letters Mode**: Toggle for language learning practice
    - **Text Typing Mode**: Toggle for interactive typing practice
-   - **Keyboard Shortcuts**: View current navigation shortcuts (Ctrl+R, Ctrl+B, Ctrl+N by default)
+   - **Subtitle Overlay Visibility**: Show or hide subtitle text overlaid on the video
+   - **Keyboard Shortcuts**: View current navigation shortcuts (Ctrl+R, Ctrl+B, Ctrl+N, Ctrl+H by default)
    - All preferences are automatically saved to localStorage
 
 #### Interactive Playbook & Navigation
@@ -163,6 +165,28 @@ A React-based web application for interactive video playback with synchronized s
 3. **Preview Selection**: Click the "Preview" button to view selected subtitles in a modal
 4. **Export Selection**: Click the "Download" button to export selected subtitles as a JSON file
 5. **Visual Feedback**: Selected subtitles are highlighted in yellow for easy identification
+
+#### Subtitle Visibility Toggle
+
+The Subtitle Visibility Toggle feature provides instant control over subtitle overlay display:
+
+1. **Quick Toggle**: Press **Ctrl+H** anywhere in the application to instantly show/hide subtitle overlays
+2. **Settings Toggle**: Use the "Subtitle Overlay Visibility" control in the settings panel (⚙️ button)
+3. **Visual Feedback**:
+   - When subtitles are hidden, a gray indicator shows: "👁️‍🗨️ Subtitles Hidden - Press Ctrl+H to show"
+   - When subtitles are visible, normal subtitle overlay is displayed with all features
+4. **Persistent Setting**: Your visibility preference is automatically saved and restored
+5. **Compatible Features**: Works seamlessly with all other features:
+   - Text Typing Mode (indicators still show when overlay is hidden)
+   - Draggable positioning (available when overlay is visible)
+   - All keyboard shortcuts continue to work normally
+
+**Use Cases:**
+
+- Focus on audio-only listening practice without visual distractions
+- Quickly hide subtitles during challenging scenes to test comprehension
+- Toggle visibility during different learning phases (listening vs reading)
+- Clean video viewing experience when subtitles aren't needed
 
 #### Hide Letters Mode for Language Learning
 
@@ -234,6 +258,11 @@ The Text Typing Mode provides an interactive typing practice experience with enh
   - Jumps to the beginning of the next subtitle
   - Works in all modes without interfering with text typing
   - Automatically plays the video from the next subtitle start time
+- **Ctrl+H** (default): Toggle subtitle overlay visibility
+  - Instantly show/hide subtitle text overlaid on the video
+  - Works in all modes and states (typing, auto-pause, etc.)
+  - Visual feedback provided when subtitles are hidden
+  - Preference is automatically saved and restored
 
 **Text Typing Mode Shortcuts:**
 
@@ -346,6 +375,8 @@ The application is designed to be extensible. Recent implementations and future 
 - **Text Typing Mode** - Interactive typing practice with real-time letter revelation
 - **Enhanced Text Typing Features** - Target letter emphasis with pulsing animation and red blinking feedback for typing mistakes
 - **Bracket preservation** - Text between [brackets] remains unchanged in language learning modes
+- **Subtitle Visibility Toggle** - Instant show/hide subtitle overlays with Ctrl+H shortcut and settings toggle
+- **Visual Feedback for Hidden Subtitles** - Clear indicator when subtitles are hidden with quick toggle instructions
 
 #### 🚀 Future Enhancement Ideas
 
@@ -540,13 +571,14 @@ Selected subtitles are exported as JSON with the following structure:
 
 ### Common Issues
 
-**Keyboard shortcuts (Ctrl+R, Ctrl+B, Ctrl+N) not working:**
+**Keyboard shortcuts (Ctrl+R, Ctrl+B, Ctrl+N, Ctrl+H) not working:**
 
 - Ensure you're not typing in an input field or textarea
-- Make sure to use the Ctrl key along with R, B, or N (not just the letters alone)
+- Make sure to use the Ctrl key along with R, B, N, or H (not just the letters alone)
 - Check that the video and subtitles are loaded
 - Verify there's a current active subtitle for replay functionality
 - For previous/next navigation, ensure you're not at the first/last subtitle respectively
+- Ctrl+H works even when no subtitles are currently active (toggles overlay visibility)
 - Check browser console for any error messages
 
 **Text Typing Mode not responding to keyboard input:**
@@ -554,7 +586,7 @@ Selected subtitles are exported as JSON with the following structure:
 - Ensure the video player area has focus by clicking on it
 - Check that Text Typing Mode is enabled in settings
 - Verify that your browser supports keyboard events
-- Note: Navigation shortcuts (Ctrl+R, Ctrl+B, Ctrl+N) should still work while in Text Typing Mode
+- Note: Navigation shortcuts (Ctrl+R, Ctrl+B, Ctrl+N) and visibility toggle (Ctrl+H) should still work while in Text Typing Mode
 
 **Keyboard shortcuts conflicting with text typing:**
 
