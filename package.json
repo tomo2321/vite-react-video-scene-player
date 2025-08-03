@@ -1,8 +1,18 @@
 {
   "name": "vite-react-video-scene-player",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.2.0",
   "type": "module",
+  "description": "Interactive video player with synchronized subtitles and advanced language learning features",
+  "keywords": [
+    "video-player",
+    "subtitles",
+    "language-learning",
+    "react",
+    "typescript",
+    "srt",
+    "vtt"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

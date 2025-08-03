@@ -17,6 +17,8 @@ This is a React + TypeScript + Vite web application for interactive video playba
 - Overlay subtitles on the video player with draggable positioning
 - Auto-pause mode that stops video at the end of each subtitle
 - Synchronized video-subtitle interaction with precise timing
+- Resizable panels with splitter component for optimal layout
+- Mobile-responsive design with touch-friendly interactions
 
 ### Advanced Learning Features
 
@@ -139,10 +141,10 @@ interface KeyboardShortcuts {
 
 ### Core Technologies
 
-- **React 18**: Functional components with hooks
-- **TypeScript**: Strict type checking and interfaces
-- **Vite**: Fast build tool and development server
-- **Biome**: Linting and code formatting
+- **React 19**: Functional components with hooks and latest features
+- **TypeScript 5.8**: Strict type checking and interfaces
+- **Vite 7**: Fast build tool and development server
+- **Biome 2.1**: Linting and code formatting
 
 ### File Handling
 

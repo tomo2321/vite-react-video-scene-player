@@ -2,6 +2,48 @@
 
 A React-based web application for interactive video playback with synchronized subtitle functionality and advanced language learning features. Load local video files and SRT or VTT subtitle files, then use powerful navigation shortcuts and typing practice modes for an enhanced learning experience.
 
+![Project Status](https://img.shields.io/badge/status-active-brightgreen)
+![React](https://img.shields.io/badge/React-19-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue)
+![Vite](https://img.shields.io/badge/Vite-7-purple)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+## Quick Start
+
+```bash
+# Clone and setup
+git clone <repository-url>
+cd vite-react-video-scene-player
+npm install
+
+# Start development server
+npm run dev
+
+# Open http://localhost:5173 in your browser
+# Load a video file and subtitle file to get started!
+```
+
+## Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Usage](#usage)
+- [Supported Formats](#supported-formats)
+- [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
+- [Development](#development)
+- [API Reference](#api-reference)
+- [Browser Compatibility](#browser-compatibility)
+- [Troubleshooting](#troubleshooting)
+- [Accessibility](#accessibility)
+- [Contributing](#contributing)
+- [License](#license)ideo Scene Player
+
+A React-based web application for interactive video playback with synchronized subtitle functionality and advanced language learning features. Load local video files and SRT or VTT subtitle files, then use powerful navigation shortcuts and typing practice modes for an enhanced learning experience.
+
 ## Features
 
 ### Core Video & Subtitle Features
@@ -45,8 +87,10 @@ A React-based web application for interactive video playback with synchronized s
 
 ### Prerequisites
 
-- Node.js (version 18 or higher)
-- npm or yarn
+- Node.js (version 18 or higher recommended)
+- npm (comes with Node.js) or yarn
+- Modern web browser with HTML5 video support
+- Local video and subtitle files to work with
 
 ### Installation
 
@@ -220,10 +264,10 @@ The Text Typing Mode provides an interactive typing practice experience with enh
 
 ## Technology Stack
 
-- **React 18** - UI framework with hooks and state management
-- **TypeScript** - Type safety with comprehensive interfaces for shortcuts, subtitles, and components
-- **Vite** - Fast build tool and development server with hot module replacement
-- **Biome** - Fast linter and formatter for JavaScript/TypeScript
+- **React 19** - Latest UI framework with hooks and state management
+- **TypeScript 5.8** - Type safety with comprehensive interfaces for shortcuts, subtitles, and components
+- **Vite 7** - Fast build tool and development server with hot module replacement
+- **Biome 2.1** - Fast linter and formatter for JavaScript/TypeScript
 - **Custom Parsers** - Manual SRT and VTT subtitle parsing with index extraction and error handling
 - **CSS3** - Modern styling with:
   - Keyframe animations (target letter emphasis, mistake feedback)
@@ -261,11 +305,16 @@ src/
 
 ### Available Scripts
 
-- `npm run dev` - Start development server
+- `npm run dev` - Start development server (localhost:5173)
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run Biome linter
 - `npm run lint:fix` - Run Biome linter with auto-fix
+- `npm run format` - Format code with Biome
+- `npm run format:fix` - Format code with Biome (write changes)
+- `npm run check` - Run all Biome checks
+- `npm run check:fix` - Run all Biome checks with auto-fix
+- `npm run build:lint` - Lint and build for production
 
 ### Code Quality
 
@@ -301,10 +350,9 @@ The application is designed to be extensible. Recent implementations and future 
 #### 🚀 Future Enhancement Ideas
 
 - Support for additional subtitle formats (ASS, SUB)
-- Video playback speed controls
+- Video playback speed controls (0.25x to 2x)
 - Subtitle text search functionality
 - Multiple difficulty levels for Hide Letters Mode (hide more/fewer letters)
-- **Keyboard shortcuts for navigation** - Enhanced with Ctrl+R (replay), Ctrl+B (previous), Ctrl+N (next) functionality
 - Loop mode for current subtitle
 - Export functionality for edited subtitles (SRT/VTT)
 - Subtitle timing adjustment tools
@@ -315,6 +363,12 @@ The application is designed to be extensible. Recent implementations and future 
 - Word-by-word reveal mode for text typing
 - Typing speed metrics and progress tracking
 - Custom bracket notation support (e.g., parentheses, curly braces)
+- Keyboard shortcut customization interface
+- Subtitle synchronization tools
+- Video chapter markers
+- Practice mode statistics and analytics
+- Mobile app versions (React Native)
+- PWA (Progressive Web App) support
 
 ## API Reference
 
@@ -474,10 +528,13 @@ Selected subtitles are exported as JSON with the following structure:
 
 ## Browser Compatibility
 
-- Chrome 88+
-- Firefox 85+
-- Safari 14+
-- Edge 88+
+- **Chrome 88+** (recommended for best performance)
+- **Firefox 85+**
+- **Safari 14+**
+- **Edge 88+**
+- **Modern browsers** with HTML5 video and ES2020 support
+
+> **Note**: Some features like advanced keyboard handling and drag-and-drop may have reduced functionality on older browsers.
 
 ## Troubleshooting
 
@@ -548,17 +605,81 @@ Selected subtitles are exported as JSON with the following structure:
 - For large subtitle files (1000+ entries), consider splitting into smaller files
 - Use modern video formats (MP4 H.264) for better browser compatibility
 - Close other browser tabs when working with large video files
+- Enable hardware acceleration in your browser for smooth video playback
+- Use SSD storage for faster file loading and better seek performance
+
+### Security Notes
+
+- All files are processed locally in your browser - no data is sent to external servers
+- Video and subtitle files remain on your device
+- Settings are stored only in your browser's localStorage
 
 ## Accessibility
 
 The application includes comprehensive accessibility features:
 
-- Keyboard navigation support
-- Screen reader compatibility
-- Proper ARIA labels and roles
-- Focus management for modals
-- Accessible color contrast ratios
+- **Keyboard Navigation**: Full keyboard support with Tab/Shift+Tab navigation
+- **Screen Reader Compatibility**: Proper ARIA labels and semantic HTML
+- **Focus Management**: Logical focus order and visible focus indicators
+- **Color Contrast**: Accessible color contrast ratios for all text
+- **Responsive Design**: Works on various screen sizes and devices
+- **Audio Support**: Compatible with browser audio enhancements
+
+## Contributing
+
+We welcome contributions! Here's how you can help:
+
+### Development Setup
+
+1. Fork the repository
+2. Clone your fork: `git clone https://github.com/yourusername/vite-react-video-scene-player.git`
+3. Install dependencies: `npm install`
+4. Start development server: `npm run dev`
+5. Make your changes and test thoroughly
+6. Run linting: `npm run check:fix`
+7. Submit a pull request
+
+### Code Style
+
+- Follow TypeScript best practices
+- Use functional components with hooks
+- Write comprehensive JSDoc comments
+- Maintain accessibility standards
+- Test with various video/subtitle formats
+
+### Bug Reports
+
+Please include:
+
+- Browser and version
+- Steps to reproduce
+- Expected vs actual behavior
+- Sample video/subtitle files (if applicable)
 
 ## License
 
+MIT License - see the full license text below:
+
+```
 MIT License
+
+Copyright (c) 2025 Video Scene Player Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
